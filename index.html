@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Film Club Favorites — Special Cinema Edition</title>
+<meta name="description" content="Film Club Favorites: a digital film magazine featuring The Proposal, My Sister's Keeper, Let Me In, 127 Hours, The King's Speech and Sherlock Holmes.">
+<meta name="theme-color" content="#09090c">
+<!-- Mark that JavaScript is running (used to hide elements before their entrance animation) -->
+<script>document.documentElement.classList.add('js');</script>
+<!-- Fonts: Playfair Display (editorial headings), Cormorant Garamond (quotes), Inter (body). Falls back to Georgia / system fonts offline. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400;1,500&family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,500;1,700&display=swap" rel="stylesheet">
+
+<style>
+/* =====================================================================
+   1. DESIGN TOKENS & RESET
+   ===================================================================== */
+:root{
+  --ink:#09090c; --char:#121217; --navy:#0c1222;
+  --gold:#c9a45c; --gold-l:#ead5a2; --beige:#e8dcc4; --red:#a33b3b;
+  --txt:#ece6d9; --mut:#a59e8f; --line:rgba(232,220,196,.14);
+  --serif:'Playfair Display',Georgia,'Times New Roman',serif;
+  --quote:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --nav-h:66px; --max:1240px;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--ink);color:var(--txt);font-family:var(--sans);font-size:17px;line-height:1.72;font-weight:400;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body.no-scroll{overflow:hidden}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+ol,ul{list-style:none}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+::selection{background:var(--gold);color:#111}
+.wrap{width:min(var(--max),calc(100% - 48px));margin-inline:auto}
+section,article{scroll-margin-top:calc(var(--nav-h) - 1px)}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Film-grain texture over the whole page */
+body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:400;opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* =====================================================================
+   2. SHARED EDITORIAL COMPONENTS
+   ===================================================================== */
+.kicker{display:flex;align-items:center;gap:14px;font-size:.72rem;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:var(--accent,var(--gold))}
+.kicker::before{content:'';width:42px;height:1px;background:currentColor;flex:none}
+.kicker.center{justify-content:center}
+.kicker.center::after{content:'';width:42px;height:1px;background:currentColor}
+.f-title{font-family:var(--serif);font-weight:800;font-size:clamp(3rem,8vw,7.2rem);line-height:.94;letter-spacing:-.02em;margin:18px 0 22px}
+.f-title em{font-weight:500;font-style:italic;color:var(--accent)}
+.dek{font-family:var(--quote);font-style:italic;font-weight:500;font-size:clamp(1.3rem,2.3vw,1.8rem);line-height:1.35;max-width:38ch;opacity:.92}
+.sec-head{text-align:center;max-width:820px;margin:0 auto 70px}
+.sec-head h2{font-family:var(--serif);font-weight:700;font-size:clamp(2.5rem,6.4vw,5.2rem);line-height:1;letter-spacing:-.01em;text-transform:uppercase;margin:20px 0 18px}
+.sec-head .dek{margin:0 auto;color:var(--mut)}
+
+.btn{display:inline-flex;align-items:center;gap:14px;padding:18px 34px;border:1px solid var(--gold);background:var(--gold);color:#0d0b08;font-size:.74rem;font-weight:600;letter-spacing:.26em;text-transform:uppercase;transition:background .35s,color .35s,gap .35s}
+.btn:hover{background:transparent;color:var(--gold);gap:20px}
+.btn.ghost{background:transparent;color:var(--gold)}
+.btn.ghost:hover{background:var(--gold);color:#0d0b08}
+.btn svg{width:16px;height:16px}
+
+/* Meta / information strip */
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:1px solid var(--rule,var(--line));margin-top:34px}
+.meta>div{padding:16px 18px 16px 0;border-bottom:1px solid var(--rule,var(--line))}
+.meta dt,.lbl{font-size:.64rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--accent,var(--gold));margin-bottom:4px;display:block}
+.meta dd{font-family:var(--serif);font-size:1.06rem;line-height:1.35}
+
+/* Artwork containers (SVG illustration or optional photo) */
+.art{position:relative;width:100%;background:#16161b;overflow:hidden}
+.art>svg,.art>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.r-poster{aspect-ratio:2/3}
+.r-wide{aspect-ratio:16/10}
+.r-cine{aspect-ratio:21/9}
+figure{position:relative}
+figcaption{font-size:.78rem;line-height:1.5;color:var(--mut);margin-top:12px;letter-spacing:.01em}
+figcaption b{color:var(--accent,var(--gold));font-weight:600;letter-spacing:.14em;text-transform:uppercase;font-size:.62rem;margin-right:6px}
+.zoom{cursor:zoom-in}
+.zoom .art{transition:filter .6s}
+.zoom .art>svg,.zoom .art>img{transition:transform 1.2s var(--ease)}
+.zoom:hover .art>svg,.zoom:hover .art>img{transform:scale(1.05)}
+.zoom .art::after{content:'';position:absolute;inset:0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);pointer-events:none}
+.zoom-hint{position:absolute;top:14px;right:14px;z-index:2;width:38px;height:38px;display:grid;place-items:center;background:rgba(10,10,12,.55);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.2);opacity:0;transform:translateY(-6px);transition:.4s var(--ease)}
+.zoom:hover .zoom-hint,.zoom:focus-visible .zoom-hint{opacity:1;transform:none}
+.zoom-hint svg{width:16px;height:16px;stroke:#fff}
+
+/* Gallery — "scene preview" for each film */
+.gallery-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin:100px 0 26px;padding-bottom:16px;border-bottom:1px solid var(--rule,var(--line))}
+.gallery-head h3{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.3rem);font-weight:600}
+.gallery-head span{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mut)}
+.gallery{display:grid;grid-template-columns:1.55fr 1fr;gap:20px}
+.gallery figure:first-child{grid-row:span 2;display:flex;flex-direction:column}
+.gallery figure:first-child .art{flex:1;min-height:300px}
+.gallery figure:not(:first-child) .art{aspect-ratio:16/10}
+.gallery.poster-first{grid-template-columns:1fr 1.45fr}
+
+/* Statistics */
+.stat-band{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.stat{padding:36px 30px;border-left:1px solid var(--rule)}
+.stat:first-child{border-left:0;padding-left:0}
+.num{display:block;font-family:var(--serif);font-weight:700;font-size:clamp(2.5rem,5vw,4.3rem);line-height:1;color:var(--accent);letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.stat .lbl{margin-top:12px;color:var(--text);opacity:.75;letter-spacing:.14em;line-height:1.5}
+
+/* Pull quote */
+.pull{position:relative;max-width:920px;margin:110px auto;text-align:center;font-family:var(--quote);font-style:italic;font-weight:500;font-size:clamp(1.7rem,3.6vw,3rem);line-height:1.22;color:var(--text)}
+.pull::before{content:'\201C';display:block;font-family:var(--serif);font-style:normal;font-size:5.5rem;line-height:.6;color:var(--accent);margin-bottom:22px}
+.pull cite{display:block;margin-top:22px;font-family:var(--sans);font-style:normal;font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent)}
+
+/* "Worked by" credit — styled like a magazine byline */
+.credit{display:flex;align-items:center;gap:22px;margin-top:90px;padding-top:30px;border-top:1px solid var(--rule)}
+.credit::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--rule),transparent)}
+.credit span{font-size:.68rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;opacity:.75}
+.credit strong{font-family:var(--quote);font-style:italic;font-weight:500;font-size:clamp(2rem,4vw,2.8rem);line-height:1;color:var(--accent)}
+
+/* Feature (article) shell */
+.feature{position:relative;padding:130px 0;color:var(--text);background:var(--bg);overflow:hidden}
+.feature p{max-width:68ch}
+.sub{font-family:var(--serif);font-weight:600;font-size:1.5rem;margin:40px 0 16px}
+.dropcap::first-letter{float:left;font-family:var(--serif);font-weight:700;font-size:5.1em;line-height:.8;padding:8px 14px 0 0;color:var(--accent)}
+
+/* Entrance animations (only when JavaScript runs) */
+.js .reveal{opacity:0;transform:translateY(34px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease)}
+.js .reveal.in{opacity:1;transform:none}
+.js .reveal.d1{transition-delay:.12s}.js .reveal.d2{transition-delay:.24s}.js .reveal.d3{transition-delay:.36s}
+
+/* =====================================================================
+   3. FIXED UI — progress bar, navigation, back-to-top
+   ===================================================================== */
+.progress{position:fixed;top:0;left:0;width:100%;height:3px;z-index:220;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,#8c6a2c,var(--gold),#f3e0ac)}
+.nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:200;display:flex;align-items:center;border-bottom:1px solid transparent;transition:background .45s,border-color .45s,backdrop-filter .45s}
+.nav.scrolled{background:rgba(9,9,12,.84);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-color:var(--line)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--serif);font-weight:700;font-size:1.02rem;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.brand i{display:grid;place-items:center;width:36px;height:36px;border:1px solid var(--gold);color:var(--gold);font-style:italic;font-size:.82rem;letter-spacing:0;text-transform:none}
+.nav-links{display:flex;align-items:center;gap:2px}
+.nav-links a{position:relative;display:block;padding:8px 9px;font-size:.66rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--mut);transition:color .3s;white-space:nowrap}
+.nav-links a::after{content:'';position:absolute;left:9px;right:9px;bottom:1px;height:1px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .4s var(--ease)}
+.nav-links a:hover,.nav-links a.active{color:var(--txt)}
+.nav-links a:hover::after,.nav-links a.active::after{transform:scaleX(1)}
+.nav-links .sep{width:1px;height:18px;background:var(--line);margin:0 6px}
+.menu-btn{display:none;align-items:center;gap:12px;padding:10px 0 10px 10px;font-size:.68rem;letter-spacing:.24em;text-transform:uppercase}
+.menu-btn .bars{position:relative;width:26px;height:12px}
+.menu-btn .bars::before,.menu-btn .bars::after{content:'';position:absolute;left:0;right:0;height:1.5px;background:var(--txt);transition:transform .4s var(--ease),top .4s var(--ease)}
+.menu-btn .bars::before{top:0}.menu-btn .bars::after{top:10px}
+.menu-btn[aria-expanded="true"] .bars::before{top:5px;transform:rotate(45deg)}
+.menu-btn[aria-expanded="true"] .bars::after{top:5px;transform:rotate(-45deg)}
+
+.mobile-menu{position:fixed;inset:0;z-index:190;background:rgba(8,8,11,.97);backdrop-filter:blur(10px);display:flex;flex-direction:column;justify-content:center;padding:calc(var(--nav-h) + 20px) 28px 40px;opacity:0;visibility:hidden;transition:opacity .45s,visibility .45s;overflow-y:auto}
+.mobile-menu.open{opacity:1;visibility:visible}
+.mobile-menu ol{width:min(560px,100%);margin:0 auto}
+.mobile-menu li{border-bottom:1px solid var(--line);opacity:0;transform:translateY(16px);transition:.5s var(--ease)}
+.mobile-menu.open li{opacity:1;transform:none}
+.mobile-menu a{display:flex;align-items:baseline;gap:18px;padding:13px 0;font-family:var(--serif);font-size:clamp(1.35rem,5.4vw,1.9rem);line-height:1.2}
+.mobile-menu a span{font-family:var(--quote);font-style:italic;color:var(--gold);font-size:1rem;min-width:26px}
+.mobile-menu .mm-foot{text-align:center;margin-top:30px;font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--mut)}
+
+.to-top{position:fixed;right:24px;bottom:24px;z-index:180;width:54px;height:54px;display:grid;place-items:center;background:rgba(12,12,16,.8);backdrop-filter:blur(8px);border:1px solid rgba(201,164,92,.55);color:var(--gold);opacity:0;visibility:hidden;transform:translateY(14px);transition:.45s var(--ease)}
+.to-top.show{opacity:1;visibility:visible;transform:none}
+.to-top:hover{background:var(--gold);color:#111}
+.to-top svg{width:18px;height:18px}
+
+/* =====================================================================
+   4. COVER (HERO)
+   ===================================================================== */
+.cover{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;isolation:isolate;padding:calc(var(--nav-h) + 36px) 0 90px}
+.collage{position:absolute;inset:-12% -6%;z-index:-3;display:grid;grid-template-columns:repeat(6,1fr);gap:10px;transform:rotate(-5deg);animation:drift 40s ease-in-out infinite alternate}
+.tile{position:relative;align-self:center}
+.tile:nth-child(odd){transform:translateY(-9%)}
+.tile:nth-child(even){transform:translateY(9%)}
+.tile .art{aspect-ratio:2/3;box-shadow:0 30px 60px rgba(0,0,0,.6)}
+.tile-label{position:absolute;left:12px;bottom:10px;z-index:2;font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+@keyframes drift{from{transform:rotate(-5deg) scale(1.04) translateX(-1.5%)}to{transform:rotate(-5deg) scale(1.1) translateX(1.5%)}}
+.cover::before{content:'';position:absolute;inset:0;z-index:-2;background:
+  radial-gradient(120% 70% at 30% 100%,rgba(9,9,12,.96) 18%,rgba(9,9,12,.55) 60%,rgba(9,9,12,.25) 100%),
+  linear-gradient(180deg,rgba(9,9,12,.7) 0%,rgba(9,9,12,.15) 30%,rgba(9,9,12,.55) 62%,rgba(9,9,12,1) 100%)}
+.cover-top{position:absolute;top:calc(var(--nav-h) + 22px);left:0;right:0}
+.cover-top .wrap{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;font-size:.66rem;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:rgba(236,230,217,.8)}
+.label{display:inline-block;padding:8px 14px;border:1px solid var(--gold);color:var(--gold-l);background:rgba(9,9,12,.35)}
+.cover-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:60px;align-items:end}
+.masthead{font-family:var(--serif);font-weight:900;text-transform:uppercase;line-height:.84;letter-spacing:-.025em;font-size:clamp(3.3rem,11.4vw,10.6rem);margin:20px 0 26px}
+.masthead span{display:block}
+.masthead .m2{font-style:italic;font-weight:500;letter-spacing:-.01em;background:linear-gradient(95deg,#f6e4b1 0%,#c9a45c 45%,#efd69c 75%,#b78d43 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.08em}
+.subtitle{font-family:var(--quote);font-style:italic;font-weight:500;font-size:clamp(1.35rem,2.6vw,2.05rem);line-height:1.25;color:var(--gold-l)}
+.intro{max-width:60ch;margin:22px 0 36px;color:rgba(236,230,217,.86);font-size:1.02rem}
+.cover-lines{border-left:1px solid rgba(201,164,92,.45);padding-left:26px}
+.cover-lines a{display:block;padding:14px 0;border-bottom:1px solid var(--line);transition:padding .4s var(--ease)}
+.cover-lines a:last-child{border-bottom:0}
+.cover-lines a:hover{padding-left:8px}
+.cover-lines small{display:block;font-size:.6rem;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--gold)}
+.cover-lines strong{font-family:var(--serif);font-weight:600;font-size:1.12rem;line-height:1.25}
+.scroll-cue{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;font-size:.58rem;letter-spacing:.32em;text-transform:uppercase;color:var(--mut)}
+.scroll-cue i{position:relative;display:block;width:1px;height:46px;background:rgba(236,230,217,.18);overflow:hidden}
+.scroll-cue i::after{content:'';position:absolute;left:0;top:-50%;width:1px;height:50%;background:var(--gold);animation:cue 2.2s ease-in-out infinite}
+@keyframes cue{to{top:100%}}
+.rise{opacity:0;transform:translateY(36px);animation:rise 1.3s var(--ease) forwards;animation-delay:var(--d,0s)}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* =====================================================================
+   5. CONTENTS & COLLECTION
+   ===================================================================== */
+.toc{padding:140px 0;background:linear-gradient(180deg,var(--ink),#0d0e14)}
+.toc-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.6fr);gap:clamp(40px,7vw,100px)}
+.toc-side h2{font-family:var(--serif);font-weight:700;font-size:clamp(2.6rem,5.6vw,4.6rem);line-height:.95;margin:20px 0 26px}
+.toc-side h2 em{font-weight:500;color:var(--gold)}
+.toc-side p{color:var(--mut);max-width:42ch}
+.toc-side .issue{margin-top:34px;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:.8rem}
+.toc-side .issue dt{color:var(--gold);letter-spacing:.18em;text-transform:uppercase;font-size:.62rem;font-weight:600;padding-top:3px}
+.toc-list{border-top:1px solid var(--line);counter-reset:toc}
+.toc-list a{display:grid;grid-template-columns:62px minmax(0,1fr) auto;align-items:baseline;gap:18px;padding:22px 0;border-bottom:1px solid var(--line);transition:padding .45s var(--ease),background .45s}
+.toc-list a:hover{padding-left:14px;background:linear-gradient(90deg,rgba(201,164,92,.07),transparent 70%)}
+.t-n{font-family:var(--quote);font-style:italic;font-size:1.7rem;color:var(--gold);line-height:1}
+.t-t{font-family:var(--serif);font-size:clamp(1.35rem,2.4vw,1.95rem);line-height:1.15}
+.t-d{display:block;font-family:var(--sans);font-size:.84rem;color:var(--mut);margin-top:6px}
+.t-pg{font-size:.64rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mut);transition:color .3s}
+.toc-list a:hover .t-pg{color:var(--gold)}
+
+.collection{padding:140px 0;background:linear-gradient(180deg,#0d0e14,#0b0f1c 60%,#0a0a0e)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.card{--c:var(--gold);position:relative;display:block;overflow:hidden;isolation:isolate;background:#111;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);transition:transform .6s var(--ease),box-shadow .6s}
+.card .art{aspect-ratio:3/4}
+.card .art>svg,.card .art>img{transition:transform 1.4s var(--ease),filter .7s;filter:saturate(.85) brightness(.92)}
+.card:hover{transform:translateY(-8px);box-shadow:0 40px 70px -30px rgba(0,0,0,.9),0 0 0 1px var(--c)}
+.card:hover .art>svg,.card:hover .art>img{transform:scale(1.08);filter:saturate(1.1) brightness(1)}
+.card::after{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(5,5,8,.15) 0%,rgba(5,5,8,0) 30%,rgba(5,5,8,.94) 100%)}
+.card-num{position:absolute;top:18px;left:22px;z-index:2;font-family:var(--quote);font-style:italic;font-size:1.25rem;color:var(--c)}
+.card-genre{position:absolute;top:22px;right:22px;z-index:2;font-size:.58rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.card-info{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:26px 26px 28px}
+.card h3{font-family:var(--serif);font-weight:700;font-size:clamp(1.6rem,2.4vw,2.05rem);line-height:1.05}
+.card p{font-size:.84rem;color:rgba(236,230,217,.75);margin-top:6px}
+.card .go{display:inline-flex;align-items:center;gap:10px;margin-top:16px;font-size:.64rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase;color:var(--c)}
+.card .go i{display:block;width:26px;height:1px;background:currentColor;transition:width .45s var(--ease)}
+.card:hover .go i{width:46px}
+
+/* =====================================================================
+   6. FEATURE 01 — THE PROPOSAL (romantic, warm, elegant)
+   ===================================================================== */
+.f-proposal{--accent:#eaae70;--accent2:#e3858c;--text:#f5e8dc;--rule:rgba(234,174,112,.24);
+  background:radial-gradient(110% 70% at 85% 0%,#3d1b26 0%,#1b0f15 55%,#130a0f 100%)}
+.p-split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(36px,6vw,96px);align-items:center}
+.p-poster{position:relative}
+.p-poster::before{content:'';position:absolute;inset:-18px 18px 18px -18px;border:1px solid var(--rule);z-index:-1}
+.p-poster .art{box-shadow:0 50px 90px -40px rgba(0,0,0,.9)}
+.p-script{font-family:var(--quote);font-style:italic;color:var(--accent2);font-size:1.25rem}
+.f-proposal .stat-band{margin:100px 0 80px}
+.facts-2col{display:grid;grid-template-columns:1fr 1fr;gap:60px 80px}
+.facts-2col li{padding-top:24px;border-top:1px solid var(--rule)}
+.fn{display:block;font-family:var(--quote);font-style:italic;font-size:3.2rem;line-height:1;color:var(--accent);margin-bottom:12px}
+.facts-2col h3,.tl-item h3,.king-fact h3{font-family:var(--serif);font-weight:600;font-size:1.45rem;line-height:1.2;margin-bottom:12px}
+
+/* =====================================================================
+   7. FEATURE 02 — MY SISTER'S KEEPER (soft, emotional)
+   ===================================================================== */
+.f-msk{--accent:#f0c0aa;--accent2:#a9c0dc;--text:#eef0f4;--rule:rgba(240,192,170,.22);padding-top:0;
+  background:linear-gradient(180deg,#151c28 0%,#111723 60%,#0f141e 100%)}
+.banner{position:relative;height:min(88vh,820px);min-height:540px;overflow:hidden}
+.banner>.art{position:absolute;inset:0}
+.banner::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.25) 0%,rgba(0,0,0,0) 30%,rgba(17,23,35,.55) 62%,var(--fade) 100%)}
+.f-msk .banner{--fade:#151c28}
+.banner-copy{position:absolute;left:0;right:0;bottom:64px;z-index:2}
+.expand{position:absolute;top:calc(var(--nav-h) + 20px);right:24px;z-index:3;display:inline-flex;align-items:center;gap:10px;padding:10px 16px;font-size:.62rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:#fff;background:rgba(10,10,14,.45);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.28);transition:background .3s}
+.expand:hover{background:rgba(10,10,14,.8)}
+.expand svg{width:14px;height:14px;stroke:currentColor}
+.msk-body{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr);gap:clamp(40px,6vw,80px);margin-top:70px;align-items:start}
+.msk-text p{margin-bottom:1.15em;font-size:1.06rem}
+.msk-text .lede{font-size:1.24rem;line-height:1.65}
+.dyk{counter-reset:d;margin-top:8px}
+.dyk li{display:grid;grid-template-columns:52px 1fr;gap:16px;padding:20px 0;border-top:1px solid var(--rule)}
+.dyk li::before{counter-increment:d;content:'0' counter(d);font-family:var(--quote);font-style:italic;font-size:2.2rem;line-height:1;color:var(--accent2)}
+.glance{position:sticky;top:calc(var(--nav-h) + 24px);padding:34px 32px;background:linear-gradient(180deg,rgba(240,192,170,.07),rgba(169,192,220,.04));border:1px solid var(--rule)}
+.glance h3{font-family:var(--serif);font-weight:600;font-size:1.5rem;margin-bottom:16px}
+.glance dl>div{display:grid;grid-template-columns:104px 1fr;gap:12px;padding:11px 0;border-bottom:1px solid var(--rule);font-size:.9rem;line-height:1.45}
+.glance dt{font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);padding-top:3px}
+.money{margin-top:26px}
+.money .row{margin-bottom:14px}
+.money .row div:first-child{display:flex;justify-content:space-between;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;opacity:.85}
+.money .row b{font-family:var(--serif);font-size:1rem;letter-spacing:0;color:var(--accent)}
+.track{height:10px;background:rgba(255,255,255,.07);overflow:hidden}
+.fill{height:100%;width:var(--w);background:linear-gradient(90deg,var(--accent2),var(--accent));transform-origin:left;transition:transform 1.8s var(--ease)}
+.js .reveal .fill{transform:scaleX(0)}
+.js .reveal.in .fill{transform:scaleX(1)}
+.awards{margin-top:28px;padding-top:22px;border-top:1px solid var(--rule)}
+.awards li{display:flex;gap:12px;align-items:flex-start;font-size:.9rem;line-height:1.45;margin-bottom:12px}
+.awards svg{width:22px;height:22px;flex:none;color:var(--accent);margin-top:1px}
+.awards .none{opacity:.7;font-style:italic}
+
+/* =====================================================================
+   8. FEATURE 03 — LET ME IN (cold, mysterious, dark)
+   ===================================================================== */
+.f-lmi{--accent:#b9d2ec;--accent2:#b8323f;--text:#dde6f1;--rule:rgba(185,210,236,.18);background:radial-gradient(80% 50% at 50% 0%,#0f1a2b 0%,#070b12 60%,#05070c 100%)}
+.lmi-top{position:relative}
+.snow{position:absolute;inset:-130px 0 0;width:100%;height:calc(100% + 130px);pointer-events:none;z-index:2}
+.lmi-head{position:relative;z-index:1;text-align:center;max-width:900px;margin:0 auto 60px}
+.lmi-head .f-title{font-weight:400;text-transform:uppercase;letter-spacing:.2em;font-size:clamp(2.6rem,9vw,7.4rem);margin:26px 0 22px;text-shadow:0 0 60px rgba(185,210,236,.25)}
+.lmi-head .f-title span{color:var(--accent2)}
+.lmi-head .dek{margin:0 auto;max-width:44ch}
+.lmi-hero .art{aspect-ratio:2/1}
+.lmi-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(40px,6vw,80px);margin:80px 0 40px;align-items:start}
+.lmi-intro{font-family:var(--quote);font-weight:500;font-size:clamp(1.45rem,2.4vw,1.9rem);line-height:1.45;max-width:none!important}
+.cast>div{display:flex;align-items:baseline;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.cast dt{font-size:.62rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);white-space:nowrap}
+.cast dt::after{content:'';display:inline-block;width:0}
+.cast .lead{flex:1;border-bottom:1px dotted var(--rule);transform:translateY(-4px)}
+.cast dd{font-family:var(--serif);font-size:1.05rem;text-align:right}
+.cast dd small{display:block;font-family:var(--sans);font-size:.72rem;color:var(--mut)}
+.sec-label{display:flex;align-items:center;gap:18px;font-family:var(--serif);font-weight:400;font-size:clamp(1.5rem,3vw,2.2rem);margin:90px 0 30px;letter-spacing:.04em}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--rule)}
+.lmi-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.lmi-facts li{position:relative;padding:34px 30px;border:1px solid var(--rule);background:linear-gradient(180deg,rgba(185,210,236,.05),rgba(185,210,236,0));transition:border-color .4s,transform .5s var(--ease)}
+.lmi-facts li:hover{border-color:rgba(185,210,236,.5);transform:translateY(-4px)}
+.rn{display:block;font-family:var(--serif);font-size:2.6rem;line-height:1;color:var(--accent);margin-bottom:18px;font-weight:400}
+.lmi-cards{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:24px}
+.lmi-card{padding:40px 38px;border:1px solid var(--rule);background:rgba(185,210,236,.03)}
+.lmi-card h3{font-family:var(--serif);font-weight:400;font-size:1.7rem;margin-bottom:14px}
+.lmi-card.opinion{border-left:2px solid var(--accent2)}
+.lmi-card.opinion p:not(.kicker){font-family:var(--quote);font-style:italic;font-size:1.45rem;line-height:1.45}
+.lmi-card.opinion small{display:block;margin-top:14px;font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:var(--accent2)}
+
+/* =====================================================================
+   9. FEATURE 04 — 127 HOURS (desert, orange, survival)
+   ===================================================================== */
+.f-hours{--accent:#f39443;--accent2:#ffd27a;--text:#f7e8d7;--rule:rgba(243,148,67,.24);padding-top:0;background:linear-gradient(180deg,#1e0e06 0%,#160a05 60%,#100703 100%)}
+.f-hours .banner{height:min(94vh,880px);--fade:#1e0e06}
+.big127{display:block;font-family:var(--serif);font-weight:900;font-size:clamp(7rem,25vw,21rem);line-height:.78;letter-spacing:-.05em;color:transparent;-webkit-text-stroke:2px var(--accent2);text-shadow:0 0 80px rgba(243,148,67,.25)}
+.hours-word{display:block;font-style:italic;font-weight:500;font-size:clamp(2.6rem,6vw,5rem);color:var(--accent);margin-top:6px}
+.f-hours .f-title{margin:10px 0 18px}
+.hours-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(40px,6vw,90px);margin-top:70px;align-items:center}
+.ratio-box{padding:36px;border:1px solid var(--rule);background:rgba(243,148,67,.05)}
+.ratio-box h3{font-family:var(--serif);font-weight:600;font-size:1.35rem;margin-bottom:22px}
+.f-hours .fill{background:linear-gradient(90deg,#9b3b15,var(--accent),var(--accent2))}
+.f-hours .track{height:30px}
+.ratio-box .note{margin-top:16px;font-size:.84rem;opacity:.8}
+.oscar6{display:flex;align-items:center;gap:20px;margin-top:26px;padding-top:24px;border-top:1px solid var(--rule)}
+.oscar6 .num{font-size:4rem}
+.oscar6 p{font-size:.92rem;line-height:1.5}
+.timeline{position:relative;margin-top:90px}
+.timeline::before{content:'';position:absolute;left:218px;top:0;bottom:0;width:1px;background:linear-gradient(180deg,var(--accent),rgba(243,148,67,.1))}
+.tl-item{position:relative;display:grid;grid-template-columns:200px 1fr;gap:56px;padding:34px 0}
+.tl-item::before{content:'';position:absolute;left:213px;top:46px;width:11px;height:11px;background:var(--bg,#160a05);border:1px solid var(--accent);transform:rotate(45deg)}
+.tl-n{font-family:var(--serif);font-weight:800;font-size:3.4rem;line-height:1;color:transparent;-webkit-text-stroke:1px var(--accent);text-align:right;padding-right:6px}
+.tl-item h3{color:var(--accent2)}
+.f-hours{--bg:#160a05}
+
+/* =====================================================================
+   10. FEATURE 05 — THE KING'S SPEECH (royal, classic, historical)
+   ===================================================================== */
+.f-king{--accent:#d9b66c;--accent2:#8a2a52;--text:#f0e7d7;--rule:rgba(217,182,108,.26);background:radial-gradient(90% 60% at 50% 0%,#2b1739 0%,#140d1f 55%,#0d0915 100%)}
+.f-king::before{content:'';position:absolute;inset:26px;border:1px solid var(--rule);pointer-events:none}
+.f-king::after{content:'';position:absolute;inset:34px;border:1px solid rgba(217,182,108,.1);pointer-events:none}
+.king-head{text-align:center;max-width:900px;margin:0 auto}
+.crest{width:64px;height:64px;margin:0 auto 22px;color:var(--accent)}
+.king-head .f-title{font-weight:700;font-size:clamp(2.8rem,7.4vw,6.6rem)}
+.king-head .dek{margin:0 auto}
+.ornament{display:flex;align-items:center;justify-content:center;gap:14px;color:var(--accent);margin:34px 0}
+.ornament::before,.ornament::after{content:'';width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--accent))}
+.ornament::after{transform:scaleX(-1)}
+.ornament i{width:8px;height:8px;border:1px solid currentColor;transform:rotate(45deg)}
+.king-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr);gap:clamp(40px,6vw,80px);align-items:start;margin-top:40px}
+.king-poster{padding:14px;border:1px solid var(--rule);background:rgba(217,182,108,.04)}
+.king-text{columns:2 250px;column-gap:44px}
+.king-text p{margin-bottom:1.1em;break-inside:avoid-column}
+.oscars{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin:100px 0 0}
+.oscar{position:relative;text-align:center;padding:34px 18px 30px;border:1px solid var(--rule);background:linear-gradient(180deg,rgba(217,182,108,.08),rgba(217,182,108,0));transition:transform .5s var(--ease),border-color .4s}
+.oscar:hover{transform:translateY(-6px);border-color:var(--accent)}
+.oscar svg{width:74px;height:74px;margin:0 auto 14px;color:var(--accent)}
+.oscar strong{display:block;font-family:var(--serif);font-weight:600;font-size:1.22rem;line-height:1.2}
+.oscar small{display:block;margin-top:6px;font-size:.78rem;opacity:.75}
+.oscars-title{text-align:center;margin-top:100px}
+.oscars-title + .oscars{margin-top:34px}
+.f-king .stat-band{margin-top:90px}
+.king-facts{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:80px}
+.king-fact{padding:38px;border:1px solid var(--rule);position:relative}
+.king-fact .fn{font-family:var(--serif);font-style:normal;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;margin-bottom:16px}
+
+/* =====================================================================
+   11. FEATURE 06 — SHERLOCK HOLMES (Victorian detective)
+   ===================================================================== */
+.f-sherlock{--accent:#d3b073;--accent2:#8fa486;--text:#e9e3d3;--rule:rgba(211,176,115,.25);
+  background:radial-gradient(70% 50% at 20% 10%,rgba(143,164,134,.12),transparent 60%),linear-gradient(180deg,#12140f 0%,#0d0f0b 100%)}
+.case-head{position:relative;padding:clamp(28px,5vw,64px);border:1px solid var(--rule);background:linear-gradient(135deg,rgba(211,176,115,.07),rgba(211,176,115,0) 60%)}
+.case-head::before,.case-head::after{content:'';position:absolute;width:26px;height:26px;border:1px solid var(--accent)}
+.case-head::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.case-head::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.case-meta{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;margin-bottom:30px;font-family:'Courier New',Courier,monospace;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2)}
+.stamp{display:inline-block;padding:7px 16px;border:2px solid #b4503f;color:#d0634f;transform:rotate(-4deg);font-weight:700;letter-spacing:.24em}
+.case-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:clamp(40px,6vw,80px);margin-top:70px;align-items:start}
+.dossier>div{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:13px 0;border-bottom:1px dashed var(--rule)}
+.dossier dt{font-family:'Courier New',Courier,monospace;font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);padding-top:3px}
+.dossier dd{font-family:var(--serif);font-size:1.04rem;line-height:1.45}
+.f-sherlock .stat-band{grid-template-columns:repeat(2,1fr);margin-top:36px}
+.evidence{display:grid;grid-template-columns:repeat(2,1fr);gap:30px;margin-top:40px}
+.evidence li{position:relative;padding:40px 38px 36px;background:#e8dfc8;color:#2b251b;box-shadow:0 26px 50px -26px rgba(0,0,0,.9);transform:rotate(var(--r,0deg));transition:transform .5s var(--ease)}
+.evidence li:hover{transform:rotate(0) translateY(-4px)}
+.evidence li::before{content:'';position:absolute;top:-9px;left:50%;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e2735f,#8a2a1f);box-shadow:0 3px 6px rgba(0,0,0,.5)}
+.evidence li:last-child{grid-column:1/-1}
+.ex{display:block;font-family:'Courier New',Courier,monospace;font-size:.72rem;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#8a3a2c;margin-bottom:12px}
+.evidence h3{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2;margin-bottom:10px;color:#1e1a13}
+.evidence p{max-width:none}
+
+/* =====================================================================
+   12. VOCABULARY + PREFERENCES TABLE
+   ===================================================================== */
+.vocab{padding:140px 0 70px;background:linear-gradient(180deg,#0a0b10 0%,#0c0e16 100%)}
+.vocab-tools{display:flex;justify-content:center;margin:-30px 0 50px}
+.seg{display:inline-flex;border:1px solid var(--line)}
+.seg button{padding:12px 20px;font-size:.66rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--mut);transition:background .3s,color .3s}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--gold);color:#111}
+.vocab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+@media (min-width:1300px){.vocab-grid{grid-template-columns:repeat(5,1fr)}.v-card{padding:30px 24px 26px}.v-term{font-size:1.4rem}}
+.v-card{position:relative;padding:34px 30px 30px;background:#0b0c12;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .45s}
+.v-card:hover{background:#11131c}
+.v-top{display:flex;justify-content:space-between;align-items:flex-start}
+.v-num{font-family:var(--quote);font-style:italic;font-size:1.5rem;color:var(--gold);line-height:1}
+.v-icon{width:58px;height:58px;display:grid;place-items:center;border:1px solid rgba(201,164,92,.35);color:var(--gold-l);transition:transform .6s var(--ease),border-color .4s}
+.v-card:hover .v-icon{transform:rotate(-6deg) scale(1.06);border-color:var(--gold)}
+.v-icon svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.v-term{font-family:var(--serif);font-weight:700;font-size:1.55rem;line-height:1.15;margin:22px 0 14px}
+.v-def{display:grid;grid-template-columns:30px 1fr;gap:10px;font-size:.93rem;line-height:1.6;margin-top:12px}
+.v-def .tag{font-size:.56rem;font-weight:700;letter-spacing:.14em;color:var(--gold);border:1px solid rgba(201,164,92,.45);height:20px;display:grid;place-items:center;margin-top:3px}
+.v-sq{color:#d9cfbc}
+.v-sq strong{color:var(--gold-l);font-weight:600}
+.v-ex{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:.74rem;letter-spacing:.06em;color:var(--mut)}
+.v-ex a{color:var(--gold-l);border-bottom:1px solid rgba(201,164,92,.4);transition:color .3s}
+.v-ex a:hover{color:var(--gold)}
+.vocab-grid[data-lang="en"] .v-sq,.vocab-grid[data-lang="sq"] .v-en{display:none}
+
+.prefs{padding:70px 0 140px;background:linear-gradient(180deg,#0c0e16 0%,#0d0b10 100%)}
+.prefs .sec-head{margin-bottom:50px}
+.prefs .sec-head h2{font-size:clamp(2rem,4.6vw,3.6rem)}
+.table-wrap{border:1px solid rgba(201,164,92,.35);background:rgba(255,255,255,.015)}
+.pref-table{width:100%;border-collapse:collapse}
+.pref-table caption{text-align:left;padding:18px 26px;font-size:.78rem;color:var(--mut);border-bottom:1px solid var(--line);caption-side:top}
+.pref-table th{text-align:left;padding:18px 26px;font-size:.66rem;font-weight:600;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);background:rgba(201,164,92,.07);border-bottom:1px solid rgba(201,164,92,.35)}
+.pref-table td{padding:26px;border-bottom:1px solid var(--line);vertical-align:middle;font-size:1.06rem}
+.pref-table tr:last-child td{border-bottom:0}
+.pref-table tbody tr{transition:background .35s}
+.pref-table tbody tr:hover{background:rgba(201,164,92,.05)}
+.pref-table td:first-child{width:34%}
+.expr{display:block;font-family:var(--serif);font-weight:600;font-size:1.45rem;line-height:1.2}
+.meter{display:flex;gap:4px;margin-top:12px}
+.meter i{width:24px;height:4px;background:rgba(255,255,255,.1)}
+.meter i.on{background:var(--m)}
+.pref-table td:last-child em{font-style:normal;color:var(--gold-l);border-bottom:1px solid rgba(201,164,92,.4)}
+.scale-note{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:50px;margin-top:50px;align-items:center}
+.scale-bar{position:relative;height:8px;background:linear-gradient(90deg,#e9c77a 0%,#b9a57a 40%,#7f7a72 50%,#a5675a 70%,#b8382f 100%)}
+.scale-ticks{display:flex;justify-content:space-between;margin-top:14px;font-size:.7rem;letter-spacing:.06em;color:var(--mut)}
+.scale-ticks span{flex:1;text-align:center}
+.scale-ticks span:first-child{text-align:left}
+.scale-ticks span:last-child{text-align:right}
+.scale-ends{display:flex;justify-content:space-between;margin-bottom:12px;font-size:.62rem;font-weight:600;letter-spacing:.24em;text-transform:uppercase}
+.scale-ends span:first-child{color:#e9c77a}.scale-ends span:last-child{color:#d75a4f}
+.note-box{padding:28px 30px;border-left:2px solid var(--gold);background:rgba(201,164,92,.05);font-size:.95rem}
+.note-box h3{font-family:var(--serif);font-weight:600;font-size:1.25rem;margin-bottom:8px}
+
+/* =====================================================================
+   13. ABOUT THIS EDITION + FOOTER
+   ===================================================================== */
+.about{position:relative;padding:160px 0 0;text-align:center;background:radial-gradient(70% 55% at 50% 30%,#1d1710 0%,#0b0a0c 70%)}
+.about-title{font-family:var(--serif);font-weight:900;text-transform:uppercase;font-size:clamp(3rem,10vw,8.4rem);line-height:.86;letter-spacing:-.02em;margin:30px 0 40px}
+.about-title em{display:block;font-weight:500;color:var(--gold)}
+.about-quote{font-family:var(--quote);font-style:italic;font-weight:500;font-size:clamp(1.5rem,3.2vw,2.5rem);line-height:1.3;max-width:24ch;margin:0 auto;color:var(--gold-l)}
+.publisher{margin:60px auto 0;display:inline-flex;flex-direction:column;align-items:center;gap:6px;padding:26px 54px;border-top:1px solid var(--gold);border-bottom:1px solid var(--gold)}
+.publisher span{font-size:.68rem;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--mut)}
+.publisher strong{font-family:var(--serif);font-weight:700;font-size:2.4rem;line-height:1.1}
+.contrib{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;max-width:900px;margin:70px auto 0;background:var(--line);border:1px solid var(--line);text-align:left}
+.contrib a{display:block;padding:22px 24px;background:#0c0b0d;transition:background .35s}
+.contrib a:hover{background:#15131a}
+.contrib strong{display:block;font-family:var(--quote);font-style:italic;font-weight:500;font-size:1.6rem;line-height:1.1;color:var(--gold-l)}
+.contrib small{font-size:.74rem;color:var(--mut);letter-spacing:.04em}
+.about-actions{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-top:60px}
+.about .fine{max-width:62ch;margin:40px auto 0;font-size:.78rem;color:var(--mut)}
+.footer{margin-top:110px;border-top:1px solid var(--line);padding:30px 0 34px}
+.footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+.footer a:hover{color:var(--gold)}
+
+/* =====================================================================
+   14. LIGHTBOX
+   ===================================================================== */
+.lightbox{position:fixed;inset:0;z-index:300;display:grid;grid-template-columns:70px minmax(0,1fr) 70px;align-items:center;background:rgba(5,5,8,.985);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);opacity:0;transition:opacity .35s}
+.lightbox[hidden]{display:none}
+.lightbox.open{opacity:1}
+.lb-figure{grid-column:2;display:flex;flex-direction:column;align-items:center;max-height:100vh;padding:70px 0 30px}
+.lb-media{width:100%;height:min(76vh,900px);display:flex;align-items:center;justify-content:center;transform:scale(.97);transition:transform .45s var(--ease)}
+.lightbox.open .lb-media{transform:none}
+.lb-art{position:relative;width:100%;height:100%;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.7)}
+.lb-art>svg,.lb-art>img{width:100%;height:100%;object-fit:contain}
+.lb-cap{margin-top:18px;text-align:center;font-size:.86rem;color:var(--beige);max-width:70ch}
+.lb-btn{width:52px;height:52px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.22);color:#fff;transition:background .3s,border-color .3s;justify-self:center}
+.lb-btn:hover{background:var(--gold);border-color:var(--gold);color:#111}
+.lb-btn svg{width:20px;height:20px}
+.lb-close{position:absolute;top:16px;right:18px}
+.lb-count{position:absolute;top:30px;left:28px;font-size:.66rem;letter-spacing:.26em;color:var(--mut)}
+.lightbox.single .lb-prev,.lightbox.single .lb-next{visibility:hidden}
+
+/* =====================================================================
+   15. RESPONSIVE
+   ===================================================================== */
+@media (max-width:1180px){
+  .nav-links{display:none}
+  .menu-btn{display:inline-flex}
+}
+@media (max-width:1024px){
+  .cover-grid{grid-template-columns:1fr;gap:40px}
+  .cover-lines{display:grid;grid-template-columns:repeat(2,1fr);gap:0 24px;border-left:0;padding-left:0;border-top:1px solid rgba(201,164,92,.45)}
+  .cover-lines a:nth-last-child(2){border-bottom:0}
+  .toc-grid{grid-template-columns:1fr}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .msk-body,.lmi-grid,.hours-intro,.case-layout{grid-template-columns:1fr}
+  .glance{position:static}
+  .king-layout{grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr)}
+  .king-text{columns:1}
+  .oscars{grid-template-columns:repeat(2,1fr)}
+  .lmi-facts{grid-template-columns:1fr}
+  .case-layout .r-poster{max-width:460px}
+}
+@media (max-width:760px){
+  body{font-size:16px}
+  .wrap{width:calc(100% - 36px)}
+  .cover{padding-bottom:84px}
+  .collage{grid-template-columns:repeat(3,1fr);inset:-6% -20%;gap:8px}
+  .tile:nth-child(n+4){display:none}
+  .cover-top .wrap{font-size:.56rem;letter-spacing:.2em}
+  .cover-top .hide-sm{display:none}
+  .cover-lines{grid-template-columns:1fr}
+  .cover-lines a:nth-last-child(2){border-bottom:1px solid var(--line)}
+  .feature,.toc,.collection{padding:96px 0}
+  .p-split,.facts-2col,.lmi-cards,.king-facts,.evidence,.scale-note,.contrib,.king-layout{grid-template-columns:1fr}
+  .p-poster{max-width:420px}
+  .p-poster::before{inset:-12px 12px 12px -12px}
+  .stat-band,.f-sherlock .stat-band{grid-template-columns:1fr}
+  .stat{border-left:0;border-top:1px solid var(--rule);padding:26px 0}
+  .stat:first-child{border-top:0}
+  .cards{grid-template-columns:1fr 1fr;gap:14px}
+  .card-info{padding:16px}
+  .card h3{font-size:1.25rem}
+  .card p,.card-genre{display:none}
+  .card .go{margin-top:10px;font-size:.56rem}
+  .gallery,.gallery.poster-first{grid-template-columns:1fr}
+  .gallery figure:first-child{grid-row:auto}
+  .gallery figure:first-child .art{flex:none;aspect-ratio:16/10;min-height:0}
+  .gallery.poster-first figure:first-child .art{aspect-ratio:4/5}
+  .banner{min-height:600px}
+  .expand{top:calc(var(--nav-h) + 14px);right:14px}
+  .timeline::before{left:9px}
+  .tl-item{grid-template-columns:1fr;gap:6px;padding:26px 0 26px 40px}
+  .tl-item::before{left:4px;top:38px}
+  .tl-n{text-align:left;font-size:2.6rem}
+  .oscars{grid-template-columns:1fr 1fr;gap:12px}
+  .oscar{padding:24px 10px}
+  .oscar svg{width:56px;height:56px}
+  .oscar strong{font-size:1rem}
+  .f-king::before{inset:12px}.f-king::after{inset:18px}
+  .dossier>div{grid-template-columns:1fr;gap:2px}
+  .glance dl>div{grid-template-columns:96px 1fr}
+  .evidence li{--r:0deg!important;padding:34px 26px 28px}
+  .pref-table thead{display:none}
+  .pref-table,.pref-table tbody,.pref-table tr,.pref-table td{display:block;width:100%!important}
+  .pref-table tr{padding:22px;border-bottom:1px solid var(--line)}
+  .pref-table td{padding:0;border:0}
+  .pref-table td:last-child{margin-top:12px}
+  .pref-table td:last-child::before{content:'Example: ';font-size:.62rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:4px}
+  .lightbox{grid-template-columns:1fr}
+  .lb-figure{grid-column:1;padding:64px 12px 90px}
+  .lb-prev,.lb-next{position:absolute;bottom:22px}
+  .lb-prev{left:calc(50% - 64px)}.lb-next{right:calc(50% - 64px)}
+  .lb-media{height:62vh}
+  .to-top{right:16px;bottom:16px;width:48px;height:48px}
+  .seg button{padding:11px 13px;font-size:.6rem}
+  .menu-btn>span:first-child{display:none}
+  .brand{font-size:.86rem;gap:10px}
+  .brand i{width:32px;height:32px}
+  .pref-table caption{display:block;padding:16px 22px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .js .reveal{opacity:1;transform:none}
+  .rise{opacity:1;transform:none}
+}
+
+/* =====================================================================
+   16. PRINT — print the magazine or save it as a PDF
+   ===================================================================== */
+@media print{
+  @page{size:A4;margin:14mm}
+  html{scroll-behavior:auto}
+  body{background:#fff!important;color:#1a1a1a;font-size:10.5pt;line-height:1.55}
+  body::after{display:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact;animation:none!important;transition:none!important}
+  .nav,.progress,.mobile-menu,.to-top,.lightbox,.scroll-cue,.snow,.expand,.zoom-hint,.vocab-tools,.about-actions,.cover-actions{display:none!important}
+  .js .reveal,.rise{opacity:1!important;transform:none!important}
+  .js .reveal .fill{transform:none!important}
+  .wrap{width:100%}
+  /* Cover keeps its dark artwork as a real magazine cover */
+  .cover{min-height:0;height:262mm;padding:24mm 0 16mm;break-after:page;color:#fff;background:#09090c}
+  .collage{animation:none;inset:-8% -10%}
+  .cover .intro{color:#e8e2d6}
+  section,article{break-before:page;padding:0 0 10mm!important;background:#fff!important;color:#1a1a1a!important;overflow:visible}
+  .cover + section{break-before:auto}
+  .feature,.toc,.collection,.vocab,.prefs,.about{--text:#1a1a1a;--accent:#8a6424;--accent2:#7a3b4a;--rule:#cdbf9f;--line:#d9d0bd;--mut:#555;--gold:#8a6424;--gold-l:#6d4f1c}
+  .f-king::before,.f-king::after{display:none}
+  .banner{height:120mm;min-height:0;margin-bottom:8mm}
+  .banner .banner-copy,.banner .banner-copy *{color:#fff!important}
+  .banner .banner-copy .kicker{color:#f1d9a3!important}
+  .glance{position:static;background:#faf6ee}
+  .lmi-facts li,.lmi-card,.king-fact,.oscar,.ratio-box,.case-head,.v-card,.contrib a,.table-wrap,.note-box{background:#fff!important}
+  .evidence li{transform:none;box-shadow:none;border:1px solid #c9bd9f}
+  .evidence li::before{display:none}
+  .card,.gallery,.oscar,.evidence li,.lmi-facts li,.v-card,.facts-2col li,.tl-item,.king-fact,.pref-table tr{break-inside:avoid}
+  .cards{grid-template-columns:repeat(3,1fr)}
+  .card{box-shadow:none}
+  .card::after{background:linear-gradient(180deg,transparent 40%,rgba(0,0,0,.9))}
+  .card *{color:#fff!important}
+  .big127{-webkit-text-stroke:2px #f1d9a3}
+  .v-icon{color:#8a6424}
+  .about{color:#1a1a1a}
+  .about-title em,.about-quote{color:#8a6424}
+  .masthead .m2{color:#e2c587;background:none}
+  .pref-table th{background:#f3ecdc}
+  .num{color:#8a6424}
+  a{color:inherit}
+}
+</style>
+</head>
+
+<body>
+
+<!-- =====================================================================
+     SVG SPRITE — icons and ornaments reused across the page
+     ===================================================================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="branch" fill="currentColor">
+      <path d="M39 72 Q15 62 17 18" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <ellipse cx="31" cy="66" rx="7.5" ry="2.8" transform="rotate(-20 31 66)"/>
+      <ellipse cx="24" cy="59" rx="7.5" ry="2.8" transform="rotate(-42 24 59)"/>
+      <ellipse cx="19" cy="50" rx="7.5" ry="2.8" transform="rotate(-62 19 50)"/>
+      <ellipse cx="16.5" cy="40" rx="7.5" ry="2.8" transform="rotate(-78 16.5 40)"/>
+      <ellipse cx="16.5" cy="30" rx="7" ry="2.6" transform="rotate(-95 16.5 30)"/>
+      <ellipse cx="18" cy="21" rx="6" ry="2.4" transform="rotate(-110 18 21)"/>
+      <ellipse cx="28" cy="58" rx="6.5" ry="2.4" transform="rotate(30 28 58)"/>
+      <ellipse cx="22.5" cy="47" rx="6.5" ry="2.4" transform="rotate(12 22.5 47)"/>
+      <ellipse cx="21" cy="36" rx="6" ry="2.3" transform="rotate(-5 21 36)"/>
+    </g>
+  </defs>
+  <symbol id="laurel" viewBox="0 0 80 80">
+    <use href="#branch"/>
+    <use href="#branch" transform="translate(80 0) scale(-1 1)"/>
+    <path d="M40 22 l3.2 6.6 7.2 1 -5.2 5 1.2 7.2 -6.4 -3.4 -6.4 3.4 1.2 -7.2 -5.2 -5 7.2 -1z" fill="currentColor"/>
+  </symbol>
+  <symbol id="crown" viewBox="0 0 64 64">
+    <path d="M10 46 L6 20 L19 32 L32 12 L45 32 L58 20 L54 46Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+    <rect x="10" y="49" width="44" height="5" fill="currentColor"/>
+    <circle cx="6" cy="18" r="2.6" fill="currentColor"/><circle cx="32" cy="10" r="2.6" fill="currentColor"/><circle cx="58" cy="18" r="2.6" fill="currentColor"/>
+    <circle cx="32" cy="36" r="3" fill="currentColor"/><circle cx="20" cy="40" r="2" fill="currentColor"/><circle cx="44" cy="40" r="2" fill="currentColor"/>
+  </symbol>
+  <symbol id="ribbon" viewBox="0 0 24 24">
+    <circle cx="12" cy="9" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <path d="M8 14 L6 22 L12 19 L18 22 L16 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M12 6.2 l.9 1.9 2 .3 -1.5 1.4 .4 2 -1.8 -1 -1.8 1 .4 -2 -1.5 -1.4 2 -.3z" fill="currentColor"/>
+  </symbol>
+  <symbol id="expand" viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<!-- Reading progress indicator -->
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<!-- =====================================================================
+     STICKY NAVIGATION
+     ===================================================================== -->
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a href="#cover" class="brand" aria-label="Film Club Favorites — back to the cover"><i>FC</i>Film Club Favorites</a>
+    <nav aria-label="Magazine sections">
+      <ul class="nav-links">
+        <li><a href="#the-proposal">The Proposal</a></li>
+        <li><a href="#my-sisters-keeper">Sister’s Keeper</a></li>
+        <li><a href="#let-me-in">Let Me In</a></li>
+        <li><a href="#hours-127">127 Hours</a></li>
+        <li><a href="#the-kings-speech">King’s Speech</a></li>
+        <li><a href="#sherlock-holmes">Sherlock</a></li>
+        <li class="sep" aria-hidden="true"></li>
+        <li><a href="#vocabulary">Vocabulary</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+    </nav>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu"><span>Menu</span><span class="bars" aria-hidden="true"></span></button>
+  </div>
+</header>
+
+<!-- Mobile navigation menu -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <ol>
+    <li><a href="#contents"><span>—</span>Contents</a></li>
+    <li><a href="#the-proposal"><span>01</span>The Proposal</a></li>
+    <li><a href="#my-sisters-keeper"><span>02</span>My Sister’s Keeper</a></li>
+    <li><a href="#let-me-in"><span>03</span>Let Me In</a></li>
+    <li><a href="#hours-127"><span>04</span>127 Hours</a></li>
+    <li><a href="#the-kings-speech"><span>05</span>The King’s Speech</a></li>
+    <li><a href="#sherlock-holmes"><span>06</span>Sherlock Holmes</a></li>
+    <li><a href="#vocabulary"><span>07</span>Vocabulary</a></li>
+    <li><a href="#about"><span>08</span>About This Edition</a></li>
+  </ol>
+  <p class="mm-foot">Film Club Favorites · Special Cinema Edition</p>
+</div>
+
+<main>
+
+<!-- =====================================================================
+     COVER / HERO
+     ===================================================================== -->
+<section class="cover" id="cover" aria-label="Magazine cover">
+  <div class="collage" aria-hidden="true">
+    <div class="tile"><div class="art" data-art="proposal:key"></div><span class="tile-label">The Proposal</span></div>
+    <div class="tile"><div class="art" data-art="msk:key"></div><span class="tile-label">My Sister’s Keeper</span></div>
+    <div class="tile"><div class="art" data-art="lmi:key"></div><span class="tile-label">Let Me In</span></div>
+    <div class="tile"><div class="art" data-art="hours:key"></div><span class="tile-label">127 Hours</span></div>
+    <div class="tile"><div class="art" data-art="king:key"></div><span class="tile-label">The King’s Speech</span></div>
+    <div class="tile"><div class="art" data-art="sherlock:key"></div><span class="tile-label">Sherlock Holmes</span></div>
+  </div>
+
+  <div class="cover-top">
+    <div class="wrap">
+      <span class="label rise" style="--d:.1s">Special Cinema Edition</span>
+      <span class="rise hide-sm" style="--d:.2s">Vol. 01 · 2026</span>
+      <span class="rise" style="--d:.3s">Six Films · Ten Genres</span>
+    </div>
+  </div>
+
+  <div class="wrap cover-grid">
+    <div>
+      <h1 class="masthead"><span class="m1 rise" style="--d:.25s">Film Club</span><span class="m2 rise" style="--d:.45s">Favorites</span></h1>
+      <p class="subtitle rise" style="--d:.65s">“A Collection of Stories, Cinema &amp; Discoveries”</p>
+      <p class="intro rise" style="--d:.8s">Welcome to Film Club Favorites, a collection of remarkable films selected for their unforgettable stories, outstanding performances, and unique cinematic experiences. Explore different genres, discover fascinating behind-the-scenes facts, and find your next favorite movie.</p>
+      <div class="cover-actions rise" style="--d:.95s">
+        <a href="#collection" class="btn">Explore the Magazine <svg aria-hidden="true"><use href="#arrow"/></svg></a>
+      </div>
+    </div>
+    <nav class="cover-lines rise" style="--d:1.1s" aria-label="Cover stories">
+      <a href="#the-kings-speech"><small>Feature 05</small><strong>The $424 million royal triumph</strong></a>
+      <a href="#hours-127"><small>Feature 04</small><strong>127 Hours: a true story of survival</strong></a>
+      <a href="#sherlock-holmes"><small>Feature 06</small><strong>Sherlock Holmes, reinvented</strong></a>
+      <a href="#vocabulary"><small>Language Lab</small><strong>Learn the language of film genres</strong></a>
+    </nav>
+  </div>
+
+  <a href="#contents" class="scroll-cue" aria-label="Scroll to the table of contents">Scroll<i></i></a>
+</section>
+
+<!-- =====================================================================
+     TABLE OF CONTENTS
+     ===================================================================== -->
+<section class="toc" id="contents" aria-labelledby="toc-title">
+  <div class="wrap toc-grid">
+    <div class="toc-side reveal">
+      <p class="kicker">In This Edition</p>
+      <h2 id="toc-title">The <em>Contents</em></h2>
+      <p>Six members of the Film Club each chose a film and researched its story, its stars and its secrets. Turn the pages to discover romance, drama, horror, survival, royalty and mystery — then learn the vocabulary to talk about the films you love.</p>
+      <dl class="issue">
+        <dt>Edition</dt><dd>Special Cinema Edition</dd>
+        <dt>Features</dt><dd>Six films, 2009–2010</dd>
+        <dt>Extras</dt><dd>Cinema vocabulary &amp; preferences</dd>
+      </dl>
+    </div>
+    <ol class="toc-list reveal d1">
+      <li><a href="#the-proposal"><span class="t-n">01</span><span><span class="t-t">The Proposal</span><span class="t-d">A $317 million romantic comedy and a 20-year friendship</span></span><span class="t-pg">p. 04</span></a></li>
+      <li><a href="#my-sisters-keeper"><span class="t-n">02</span><span><span class="t-t">My Sister’s Keeper</span><span class="t-d">Family, love and difficult decisions</span></span><span class="t-pg">p. 10</span></a></li>
+      <li><a href="#let-me-in"><span class="t-n">03</span><span><span class="t-t">Let Me In</span><span class="t-d">Loneliness and friendship in a cold 1980s winter</span></span><span class="t-pg">p. 16</span></a></li>
+      <li><a href="#hours-127"><span class="t-n">04</span><span><span class="t-t">127 Hours</span><span class="t-d">The true story of Aron Ralston in Bluejohn Canyon</span></span><span class="t-pg">p. 22</span></a></li>
+      <li><a href="#the-kings-speech"><span class="t-n">05</span><span><span class="t-t">The King’s Speech</span><span class="t-d">Friendship, courage and four Academy Awards</span></span><span class="t-pg">p. 28</span></a></li>
+      <li><a href="#sherlock-holmes"><span class="t-n">06</span><span><span class="t-t">Sherlock Holmes</span><span class="t-d">A new kind of detective in Victorian London</span></span><span class="t-pg">p. 34</span></a></li>
+      <li><a href="#vocabulary"><span class="t-n">07</span><span><span class="t-t">Vocabulary</span><span class="t-d">Ten film genres in English and Albanian</span></span><span class="t-pg">p. 40</span></a></li>
+      <li><a href="#about"><span class="t-n">08</span><span><span class="t-t">About This Edition</span><span class="t-d">The team behind the magazine</span></span><span class="t-pg">p. 46</span></a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- =====================================================================
+     THE COLLECTION — interactive movie cards
+     ===================================================================== -->
+<section class="collection" id="collection" aria-labelledby="col-title">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="kicker center">The Collection</p>
+      <h2 id="col-title">Six Favorites</h2>
+      <p class="dek">Choose a film to open its feature.</p>
+    </header>
+    <div class="cards">
+      <a class="card reveal" href="#the-proposal" style="--c:#eaae70"><div class="art" data-art="proposal:key"></div><span class="card-num">01</span><span class="card-genre">Romantic Comedy</span><div class="card-info"><h3>The Proposal</h3><p>2009 · Sandra Bullock, Ryan Reynolds</p><span class="go">Read the feature <i></i></span></div></a>
+      <a class="card reveal d1" href="#my-sisters-keeper" style="--c:#f0c0aa"><div class="art" data-art="msk:key"></div><span class="card-num">02</span><span class="card-genre">Drama</span><div class="card-info"><h3>My Sister’s Keeper</h3><p>2009 · Cameron Diaz, Abigail Breslin</p><span class="go">Read the feature <i></i></span></div></a>
+      <a class="card reveal d2" href="#let-me-in" style="--c:#b9d2ec"><div class="art" data-art="lmi:key"></div><span class="card-num">03</span><span class="card-genre">Horror-Drama</span><div class="card-info"><h3>Let Me In</h3><p>2010 · Kodi Smit-McPhee, Chloë Grace Moretz</p><span class="go">Read the feature <i></i></span></div></a>
+      <a class="card reveal" href="#hours-127" style="--c:#f39443"><div class="art" data-art="hours:key"></div><span class="card-num">04</span><span class="card-genre">Survival Drama</span><div class="card-info"><h3>127 Hours</h3><p>2010 · James Franco</p><span class="go">Read the feature <i></i></span></div></a>
+      <a class="card reveal d1" href="#the-kings-speech" style="--c:#d9b66c"><div class="art" data-art="king:key"></div><span class="card-num">05</span><span class="card-genre">Historical Drama</span><div class="card-info"><h3>The King’s Speech</h3><p>2010 · Colin Firth, Geoffrey Rush</p><span class="go">Read the feature <i></i></span></div></a>
+      <a class="card reveal d2" href="#sherlock-holmes" style="--c:#d3b073"><div class="art" data-art="sherlock:key"></div><span class="card-num">06</span><span class="card-genre">Detective Mystery</span><div class="card-info"><h3>Sherlock Holmes</h3><p>2009 · Robert Downey Jr.</p><span class="go">Read the feature <i></i></span></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     FEATURE 01 — THE PROPOSAL
+     ===================================================================== -->
+<article class="feature f-proposal" id="the-proposal" aria-labelledby="t-proposal">
+  <div class="wrap">
+    <div class="p-split">
+      <figure class="zoom p-poster reveal" data-group="proposal">
+        <div class="art r-poster" data-art="proposal:key"></div>
+        <span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span>
+        <figcaption><b>Key art</b>Illustration · A lighthouse at golden hour on the New England coast.</figcaption>
+      </figure>
+      <div class="reveal d1">
+        <p class="kicker">Feature 01 · Romantic Comedy</p>
+        <h2 class="f-title" id="t-proposal">The <em>Proposal</em></h2>
+        <p class="dek">A summer box-office triumph powered by two decades of real friendship.</p>
+        <dl class="meta">
+          <div><dt>Released</dt><dd>June 19, 2009 (US)</dd></div>
+          <div><dt>Director</dt><dd>Anne Fletcher</dd></div>
+          <div><dt>Starring</dt><dd>Sandra Bullock, Ryan Reynolds</dd></div>
+          <div><dt>Genre</dt><dd>Romantic comedy</dd></div>
+          <div><dt>Running time</dt><dd>108 minutes</dd></div>
+          <div><dt>Story set in</dt><dd>Sitka, Alaska</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="stat-band reveal">
+      <div class="stat"><span class="num" data-count="317" data-prefix="$" data-suffix="M+">$317M+</span><span class="lbl">Worldwide box office</span></div>
+      <div class="stat"><span class="num">No. 1</span><span class="lbl">Highest-grossing romantic comedy of 2009</span></div>
+      <div class="stat"><span class="num" data-count="20" data-suffix="+">20+</span><span class="lbl">Years of friendship between the two stars</span></div>
+    </div>
+
+    <ol class="facts-2col">
+      <li class="reveal"><span class="fn">01</span><h3>Box Office Success</h3><p>Released in the United States on June 19, 2009, the movie became a massive commercial hit, grossing over $317 million worldwide and earning the title of the highest-grossing romantic comedy of 2009.</p></li>
+      <li class="reveal d1"><span class="fn">02</span><h3>Stellar Chemistry &amp; Friendship</h3><p>Sandra Bullock and Ryan Reynolds had been close friends for over 20 years before filming, which is why their on-screen chemistry and comedic timing feel so natural and effortless.</p></li>
+      <li class="reveal"><span class="fn">03</span><h3>Filming Location</h3><p>Although the story is set in Sitka, Alaska, the movie was actually filmed in the picturesque towns of Rockport and Gloucester in Massachusetts, USA.</p></li>
+      <li class="reveal d1"><span class="fn">04</span><h3>Written Specially for Julia Roberts</h3><p>The screenplay was originally written with Julia Roberts in mind for the lead role of Margaret Tate, though Sandra Bullock ultimately took the part and delivered an iconic performance.</p></li>
+    </ol>
+
+    <blockquote class="pull reveal">Their on-screen chemistry and comedic timing feel so natural and effortless.<cite>On Bullock &amp; Reynolds</cite></blockquote>
+
+    <div class="gallery-head reveal"><h3>Scene Preview</h3><span>Click an image to enlarge</span></div>
+    <div class="gallery reveal">
+      <figure class="zoom" data-group="proposal"><div class="art" data-art="proposal:s1"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Location</b>Illustration · The New England coast — Rockport and Gloucester, Massachusetts, stood in for Sitka, Alaska.</figcaption></figure>
+      <figure class="zoom" data-group="proposal"><div class="art" data-art="proposal:s2"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Mood</b>Illustration · Lantern-lit evenings in a small coastal town.</figcaption></figure>
+      <figure class="zoom" data-group="proposal"><div class="art" data-art="proposal:s3"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Setting</b>Illustration · New York at dusk, where Margaret Tate’s story begins.</figcaption></figure>
+    </div>
+
+    <p class="credit reveal"><span>Worked by</span> <strong>Aila</strong></p>
+  </div>
+</article>
+
+<!-- =====================================================================
+     FEATURE 02 — MY SISTER'S KEEPER
+     ===================================================================== -->
+<article class="feature f-msk" id="my-sisters-keeper" aria-labelledby="t-msk">
+  <div class="banner" data-group="msk" data-caption="Illustration · A quiet day by the sea.">
+    <div class="art" data-art="msk:s1"></div>
+    <button class="expand" data-expand aria-label="View the banner image larger"><svg aria-hidden="true"><use href="#expand"/></svg>View image</button>
+    <div class="banner-copy">
+      <div class="wrap">
+        <p class="kicker">Feature 02 · Drama</p>
+        <h2 class="f-title" id="t-msk">My Sister’s <em>Keeper</em></h2>
+        <p class="dek">An emotional story of family, love and the choices that test them.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="msk-body">
+      <div class="msk-text reveal">
+        <p class="lede dropcap">My Sister’s Keeper is an American drama film released on June 26, 2009. It was directed by Nick Cassavetes and is based on the 2004 novel by Jodi Picoult.</p>
+        <p>The main actors are Cameron Diaz, Abigail Breslin, Sofia Vassilieva, Alec Baldwin and Jason Patric.</p>
+        <p>The movie was filmed mainly in Los Angeles, California, USA. It was produced by New Line Cinema and other companies.</p>
+        <p>The film had a budget of $30 million and earned around $95.7 million worldwide. Its running time is 109 minutes.</p>
+        <p>The movie did not receive any Oscar nominations, but it won a 2009 Teen Choice Award. Abigail Breslin and Sofia Vassilieva also won Young Artist Awards in 2010.</p>
+        <h3 class="sub">Interesting Facts</h3>
+        <ol class="dyk">
+          <li><p>The movie has a different ending from the original book.</p></li>
+          <li><p>Cameron Diaz played a serious role, unlike many of her usual comedy films.</p></li>
+        </ol>
+      </div>
+
+      <aside class="glance reveal d1" aria-label="My Sister’s Keeper at a glance">
+        <h3>At a Glance</h3>
+        <dl>
+          <div><dt>Released</dt><dd>June 26, 2009</dd></div>
+          <div><dt>Director</dt><dd>Nick Cassavetes</dd></div>
+          <div><dt>Based on</dt><dd>The 2004 novel by Jodi Picoult</dd></div>
+          <div><dt>Cast</dt><dd>Cameron Diaz, Abigail Breslin, Sofia Vassilieva, Alec Baldwin, Jason Patric</dd></div>
+          <div><dt>Filmed in</dt><dd>Los Angeles, California, USA</dd></div>
+          <div><dt>Produced by</dt><dd>New Line Cinema and other companies</dd></div>
+          <div><dt>Running time</dt><dd>109 minutes</dd></div>
+        </dl>
+        <div class="money">
+          <div class="row"><div><span>Budget</span><b>$30M</b></div><div class="track"><div class="fill" style="--w:31.3%"></div></div></div>
+          <div class="row"><div><span>Worldwide</span><b>≈ $95.7M</b></div><div class="track"><div class="fill" style="--w:100%"></div></div></div>
+        </div>
+        <ul class="awards">
+          <li class="none"><svg aria-hidden="true"><use href="#ribbon"/></svg><span>No Oscar nominations</span></li>
+          <li><svg aria-hidden="true"><use href="#ribbon"/></svg><span>Teen Choice Award, 2009</span></li>
+          <li><svg aria-hidden="true"><use href="#ribbon"/></svg><span>Young Artist Awards, 2010 — Abigail Breslin &amp; Sofia Vassilieva</span></li>
+        </ul>
+      </aside>
+    </div>
+
+    <blockquote class="pull reveal">Overall, My Sister’s Keeper is an emotional film about family, love, difficult decisions and the importance of life.<cite>The verdict</cite></blockquote>
+
+    <div class="gallery-head reveal"><h3>Scene Preview</h3><span>Click an image to enlarge</span></div>
+    <div class="gallery poster-first reveal">
+      <figure class="zoom" data-group="msk"><div class="art" data-art="msk:key"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Key art</b>Illustration · Two sisters at the water’s edge.</figcaption></figure>
+      <figure class="zoom" data-group="msk"><div class="art" data-art="msk:s2"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Mood</b>Illustration · Morning light through a bedroom window.</figcaption></figure>
+      <figure class="zoom" data-group="msk"><div class="art" data-art="msk:s3"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Theme</b>Illustration · Family, love and the importance of life.</figcaption></figure>
+    </div>
+
+    <p class="credit reveal"><span>Worked by</span> <strong>Era</strong></p>
+  </div>
+</article>
+
+<!-- =====================================================================
+     FEATURE 03 — LET ME IN
+     ===================================================================== -->
+<article class="feature f-lmi" id="let-me-in" aria-labelledby="t-lmi">
+  <div class="wrap">
+    <div class="lmi-top">
+      <canvas class="snow" aria-hidden="true"></canvas>
+      <header class="lmi-head reveal">
+        <p class="kicker center">Feature 03 · Psychological Horror-Drama</p>
+        <h2 class="f-title" id="t-lmi">Let Me <span>In</span></h2>
+        <p class="dek">Loneliness, friendship and trust in a cold, melancholic 1980s winter.</p>
+      </header>
+      <figure class="zoom lmi-hero reveal" data-group="lmi">
+        <div class="art" data-art="lmi:s1"></div>
+        <span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span>
+        <figcaption><b>Setting</b>Illustration · Snow over an apartment courtyard in the 1980s.</figcaption>
+      </figure>
+    </div>
+
+    <div class="lmi-grid">
+      <p class="lmi-intro reveal">The film “Let Me In” is a psychological horror-drama that explores loneliness and the need for acceptance, blending the element of vampirism into a cold, melancholic 1980s setting.</p>
+      <dl class="cast reveal d1">
+        <div><dt>Release Date</dt><span class="lead"></span><dd>October 1, 2010 <small>in the US</small></dd></div>
+        <div><dt>Director</dt><span class="lead"></span><dd>Matt Reeves</dd></div>
+        <div><dt>Owen</dt><span class="lead"></span><dd>Kodi Smit-McPhee</dd></div>
+        <div><dt>Abby</dt><span class="lead"></span><dd>Chloë Grace Moretz</dd></div>
+        <div><dt>The Father</dt><span class="lead"></span><dd>Richard Jenkins</dd></div>
+        <div><dt>Running time</dt><span class="lead"></span><dd>116 minutes</dd></div>
+      </dl>
+    </div>
+
+    <h3 class="sec-label reveal">Interesting Facts (Beyond the Book)</h3>
+    <ol class="lmi-facts">
+      <li class="reveal"><span class="rn">I</span><p>The film is an American remake of the acclaimed 2008 Swedish film <em>Let the Right One In</em>, which was based on the novel of the same name by John Ajvide Lindqvist.</p></li>
+      <li class="reveal d1"><span class="rn">II</span><p>The director is Matt Reeves (later known for <em>The Batman</em> and <em>Planet of the Apes</em>).</p></li>
+      <li class="reveal d2"><span class="rn">III</span><p>To help the young actors get into character, the director had them keep journals and write down their characters’ thoughts daily during filming.</p></li>
+    </ol>
+
+    <div class="lmi-cards">
+      <div class="lmi-card reveal"><p class="kicker">Main Message</p><h3>What the film is about</h3><p>The film explores loneliness, friendship, trust and acceptance.</p></div>
+      <div class="lmi-card opinion reveal d1"><p class="kicker">My Opinion</p><p>It is a fascinating and suspenseful film, with an unusual story that keeps the audience interested until the end.</p><small>— Sindi</small></div>
+    </div>
+
+    <div class="gallery-head reveal"><h3>Scene Preview</h3><span>Click an image to enlarge</span></div>
+    <div class="gallery poster-first reveal">
+      <figure class="zoom" data-group="lmi"><div class="art" data-art="lmi:key"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Key art</b>Illustration · A cold winter night.</figcaption></figure>
+      <figure class="zoom" data-group="lmi"><div class="art" data-art="lmi:s2"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Mood</b>Illustration · A climbing frame under a single streetlamp.</figcaption></figure>
+      <figure class="zoom" data-group="lmi"><div class="art" data-art="lmi:s3"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Atmosphere</b>Illustration · Moonlight over the winter woods.</figcaption></figure>
+    </div>
+
+    <p class="credit reveal"><span>Worked by</span> <strong>Sindi</strong></p>
+  </div>
+</article>
+
+<!-- =====================================================================
+     FEATURE 04 — 127 HOURS
+     ===================================================================== -->
+<article class="feature f-hours" id="hours-127" aria-labelledby="t-hours">
+  <div class="banner" data-group="hours" data-caption="Illustration · Light falling into a narrow slot canyon.">
+    <div class="art" data-art="hours:s2"></div>
+    <button class="expand" data-expand aria-label="View the banner image larger"><svg aria-hidden="true"><use href="#expand"/></svg>View image</button>
+    <div class="banner-copy">
+      <div class="wrap">
+        <p class="kicker">Feature 04 · Survival Drama · Based on a True Story</p>
+        <h2 class="f-title" id="t-hours"><span class="big127">127</span><span class="hours-word">Hours</span></h2>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="hours-intro">
+      <div class="reveal">
+        <p class="dek">One climber, one canyon in Utah, and a story of survival that earned six Academy Award nominations.</p>
+        <dl class="meta">
+          <div><dt>Released</dt><dd>2010</dd></div>
+          <div><dt>Director</dt><dd>Danny Boyle</dd></div>
+          <div><dt>Starring</dt><dd>James Franco as Aron Ralston</dd></div>
+          <div><dt>Real location</dt><dd>Bluejohn Canyon, Utah</dd></div>
+          <div><dt>Running time</dt><dd>94 minutes</dd></div>
+          <div><dt>Genre</dt><dd>Biographical survival drama</dd></div>
+        </dl>
+      </div>
+      <div class="ratio-box reveal d1">
+        <h3>Small budget, big return</h3>
+        <div class="money">
+          <div class="row"><div><span>Production budget</span><b>$18M</b></div><div class="track"><div class="fill" style="--w:29.7%"></div></div></div>
+          <div class="row"><div><span>Worldwide box office</span><b>≈ $60.7M</b></div><div class="track"><div class="fill" style="--w:100%"></div></div></div>
+        </div>
+        <p class="note">The film earned more than three times its production budget.</p>
+        <div class="oscar6"><span class="num" data-count="6">6</span><p>Academy Award nominations in 2011, including Best Picture, Best Actor and Best Adapted Screenplay.</p></div>
+      </div>
+    </div>
+
+    <ol class="timeline">
+      <li class="tl-item reveal"><span class="tl-n">01</span><div><h3>Box Office Success</h3><p>Released in 2010, the movie earned approximately $60.7 million worldwide, despite having a production budget of only $18 million.</p></div></li>
+      <li class="tl-item reveal"><span class="tl-n">02</span><div><h3>Based on a True Story</h3><p>The film tells the real-life story of Aron Ralston, a mountain climber who became trapped in Bluejohn Canyon, Utah, in 2003. His incredible experience inspired the movie.</p></div></li>
+      <li class="tl-item reveal"><span class="tl-n">03</span><div><h3>Outstanding Performance</h3><p>James Franco played Aron Ralston and received an Academy Award nomination for Best Actor in 2011.</p></div></li>
+      <li class="tl-item reveal"><span class="tl-n">04</span><div><h3>Filming Location</h3><p>Unlike many films that recreate locations in studios, 127 Hours was filmed in Utah, USA, including the actual canyon where Aron Ralston’s accident took place.</p></div></li>
+      <li class="tl-item reveal"><span class="tl-n">05</span><div><h3>Award Recognition</h3><p>The film received six Academy Award nominations in 2011, including Best Picture, Best Actor and Best Adapted Screenplay.</p></div></li>
+      <li class="tl-item reveal"><span class="tl-n">06</span><div><h3>A Personal Connection</h3><p>The real Aron Ralston was involved in the production and helped James Franco understand his experiences so that he could portray the character more realistically.</p></div></li>
+    </ol>
+
+    <div class="gallery-head reveal"><h3>Scene Preview</h3><span>Click an image to enlarge</span></div>
+    <div class="gallery poster-first reveal">
+      <figure class="zoom" data-group="hours"><div class="art" data-art="hours:key"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Key art</b>Illustration · A boulder wedged between narrow canyon walls.</figcaption></figure>
+      <figure class="zoom" data-group="hours"><div class="art" data-art="hours:s1"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Landscape</b>Illustration · Canyon country at sunset, Utah.</figcaption></figure>
+      <figure class="zoom" data-group="hours"><div class="art" data-art="hours:s3"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Night</b>Illustration · Desert stars above the canyon rim.</figcaption></figure>
+    </div>
+
+    <p class="credit reveal"><span>Worked by</span> <strong>Klea</strong></p>
+  </div>
+</article>
+
+<!-- =====================================================================
+     FEATURE 05 — THE KING'S SPEECH
+     ===================================================================== -->
+<article class="feature f-king" id="the-kings-speech" aria-labelledby="t-king">
+  <div class="wrap">
+    <header class="king-head reveal">
+      <svg class="crest" aria-hidden="true"><use href="#crown"/></svg>
+      <p class="kicker center">Feature 05 · Historical Drama</p>
+      <h2 class="f-title" id="t-king">The King’s <em>Speech</em></h2>
+      <p class="dek">An inspiring film about friendship, overcoming personal challenges, and finding one’s voice.</p>
+      <div class="ornament" aria-hidden="true"><i></i></div>
+    </header>
+
+    <div class="king-layout">
+      <figure class="zoom king-poster reveal" data-group="king">
+        <div class="art r-poster" data-art="king:key"></div>
+        <span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span>
+        <figcaption><b>Key art</b>Illustration · The microphone — the King’s greatest challenge.</figcaption>
+      </figure>
+      <div class="reveal d1">
+        <div class="king-text">
+          <p class="dropcap">The King’s Speech is a British historical drama film released in late 2010 and early 2011. It was directed by Tom Hooper and written by David Seidler.</p>
+          <p>The main actors are Colin Firth, Geoffrey Rush, Helena Bonham Carter, Guy Pearce, and Michael Gambon.</p>
+          <p>The movie was filmed mainly in London and historic locations across England. It was produced by See-Saw Films and Bedlam Productions.</p>
+          <p>The film had a budget of $15 million and earned around $424 million worldwide. Its running time is 118 minutes.</p>
+          <p>The movie was a massive critical success, winning four Academy Awards in 2011: Best Picture, Best Director, Best Original Screenplay, and Best Actor for Colin Firth.</p>
+        </div>
+        <dl class="meta">
+          <div><dt>Director</dt><dd>Tom Hooper</dd></div>
+          <div><dt>Writer</dt><dd>David Seidler</dd></div>
+          <div><dt>Producers</dt><dd>See-Saw Films, Bedlam Productions</dd></div>
+          <div><dt>Running time</dt><dd>118 minutes</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="oscars-title reveal"><p class="kicker center">Academy Awards, 2011</p></div>
+    <div class="oscars">
+      <div class="oscar reveal"><svg aria-hidden="true"><use href="#laurel"/></svg><strong>Best Picture</strong><small>Winner</small></div>
+      <div class="oscar reveal d1"><svg aria-hidden="true"><use href="#laurel"/></svg><strong>Best Director</strong><small>Tom Hooper</small></div>
+      <div class="oscar reveal d2"><svg aria-hidden="true"><use href="#laurel"/></svg><strong>Best Original Screenplay</strong><small>David Seidler</small></div>
+      <div class="oscar reveal d3"><svg aria-hidden="true"><use href="#laurel"/></svg><strong>Best Actor</strong><small>Colin Firth</small></div>
+    </div>
+
+    <div class="stat-band reveal">
+      <div class="stat"><span class="num" data-count="15" data-prefix="$" data-suffix="M">$15M</span><span class="lbl">Budget</span></div>
+      <div class="stat"><span class="num" data-count="424" data-prefix="$" data-suffix="M">$424M</span><span class="lbl">Worldwide (approx.)</span></div>
+      <div class="stat"><span class="num" data-count="4">4</span><span class="lbl">Academy Awards won</span></div>
+    </div>
+
+    <div class="king-facts">
+      <div class="king-fact reveal"><span class="fn">Interesting Fact · I</span><h3>A story close to the writer’s heart</h3><p>Screenwriter David Seidler stuttered as a child and spent decades getting permission to write the story.</p></div>
+      <div class="king-fact reveal d1"><span class="fn">Interesting Fact · II</span><h3>An authentic performance</h3><p>Colin Firth wore dental braces during filming to help portray the stutter authentically.</p></div>
+    </div>
+
+    <blockquote class="pull reveal">Overall, The King’s Speech is an inspiring film about friendship, overcoming personal challenges, and finding one’s voice.<cite>The verdict</cite></blockquote>
+
+    <div class="gallery-head reveal"><h3>Scene Preview</h3><span>Click an image to enlarge</span></div>
+    <div class="gallery reveal">
+      <figure class="zoom" data-group="king"><div class="art" data-art="king:s2"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Setting</b>Illustration · London at dusk.</figcaption></figure>
+      <figure class="zoom" data-group="king"><div class="art" data-art="king:s1"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Royalty</b>Illustration · The crown.</figcaption></figure>
+      <figure class="zoom" data-group="king"><div class="art" data-art="king:s3"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>The broadcast</b>Illustration · A royal speech on the wireless.</figcaption></figure>
+    </div>
+
+    <p class="credit reveal"><span>Worked by</span> <strong>Altea</strong></p>
+  </div>
+</article>
+
+<!-- =====================================================================
+     FEATURE 06 — SHERLOCK HOLMES
+     ===================================================================== -->
+<article class="feature f-sherlock" id="sherlock-holmes" aria-labelledby="t-sherlock">
+  <div class="wrap">
+    <header class="case-head reveal">
+      <div class="case-meta"><span class="stamp">Case File No. 06</span><span>Victorian London · 1891</span></div>
+      <p class="kicker">Feature 06 · Detective Mystery</p>
+      <h2 class="f-title" id="t-sherlock">Sherlock <em>Holmes</em></h2>
+      <p class="dek">The world’s most famous detective, reinvented as an energetic and unconventional hero.</p>
+    </header>
+
+    <div class="case-layout">
+      <figure class="zoom reveal" data-group="sherlock">
+        <div class="art r-poster" data-art="sherlock:key"></div>
+        <span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span>
+        <figcaption><b>Key art</b>Illustration · A gaslit street in Victorian London.</figcaption>
+      </figure>
+      <div class="reveal d1">
+        <dl class="dossier">
+          <div><dt>Released</dt><dd>December 25, 2009</dd></div>
+          <div><dt>Director</dt><dd>Guy Ritchie</dd></div>
+          <div><dt>Starring</dt><dd>Robert Downey Jr. (Sherlock Holmes), Jude Law (Dr. Watson), Rachel McAdams, Mark Strong</dd></div>
+          <div><dt>Story set in</dt><dd>Victorian London, 1891</dd></div>
+          <div><dt>Filmed in</dt><dd>London, Manchester, Liverpool and other locations across England</dd></div>
+          <div><dt>Running time</dt><dd>128 minutes</dd></div>
+          <div><dt>Awards</dt><dd>Golden Globe for Best Actor (Musical or Comedy) for Robert Downey Jr.; two Oscar nominations</dd></div>
+        </dl>
+        <div class="stat-band">
+          <div class="stat"><span class="num" data-count="524" data-prefix="$" data-suffix="M+">$524M+</span><span class="lbl">Worldwide box office</span></div>
+          <div class="stat"><span class="num">1891</span><span class="lbl">The year the story takes place</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sec-label reveal">The Evidence</h3>
+    <ol class="evidence">
+      <li class="reveal" style="--r:-1deg"><span class="ex">Exhibit A</span><h3>Box Office Success</h3><p>Released on December 25, 2009, the movie became a commercial success, earning over $524 million worldwide and becoming one of the most successful detective films of its time.</p></li>
+      <li class="reveal d1" style="--r:.8deg"><span class="ex">Exhibit B</span><h3>Robert Downey Jr.’s Transformation</h3><p>Robert Downey Jr. completely embraced the role of Sherlock Holmes, bringing a unique combination of intelligence, humour and eccentric behaviour to the famous detective.</p></li>
+      <li class="reveal" style="--r:.6deg"><span class="ex">Exhibit C</span><h3>Filming Location</h3><p>Although the story takes place in Victorian London in 1891, much of the movie was filmed in London and other locations across England, using detailed historical sets to recreate the atmosphere of the 19th century.</p></li>
+      <li class="reveal d1" style="--r:-.8deg"><span class="ex">Exhibit D</span><h3>Unique Detective Style</h3><p>Unlike the traditional image of Sherlock Holmes, this version portrays him as an energetic, unconventional detective who uses scientific experiments, careful observations and incredible fighting skills to solve mysteries.</p></li>
+      <li class="reveal" style="--r:-.3deg"><span class="ex">Exhibit E</span><h3>Additional Filming Locations</h3><p>Although the story is set in Victorian London, filming also took place in Manchester, Liverpool and other locations across England.</p></li>
+    </ol>
+
+    <div class="gallery-head reveal"><h3>Scene Preview</h3><span>Click an image to enlarge</span></div>
+    <div class="gallery reveal">
+      <figure class="zoom" data-group="sherlock"><div class="art" data-art="sherlock:s1"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Setting</b>Illustration · Fog and chimney smoke over Victorian rooftops.</figcaption></figure>
+      <figure class="zoom" data-group="sherlock"><div class="art" data-art="sherlock:s2"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Observation</b>Illustration · A detective’s tools: a magnifying glass, a pocket watch and case notes.</figcaption></figure>
+      <figure class="zoom" data-group="sherlock"><div class="art" data-art="sherlock:s3"></div><span class="zoom-hint" aria-hidden="true"><svg><use href="#expand"/></svg></span><figcaption><b>Science</b>Illustration · A Victorian laboratory for scientific experiments.</figcaption></figure>
+    </div>
+
+    <p class="credit reveal"><span>Worked by</span> <strong>Erald</strong></p>
+  </div>
+</article>
+
+<!-- =====================================================================
+     CINEMA VOCABULARY
+     ===================================================================== -->
+<section class="vocab" id="vocabulary" aria-labelledby="t-vocab">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="kicker center">Section 07 · Language Lab</p>
+      <h2 id="t-vocab">Cinema Vocabulary</h2>
+      <p class="dek">Explore the language of film genres.</p>
+    </header>
+
+    <div class="vocab-tools reveal">
+      <div class="seg" role="group" aria-label="Choose the language of the explanations">
+        <button type="button" data-lang="both" aria-pressed="true">English + Shqip</button>
+        <button type="button" data-lang="en" aria-pressed="false">English</button>
+        <button type="button" data-lang="sq" aria-pressed="false">Shqip</button>
+      </div>
+    </div>
+
+    <ol class="vocab-grid" data-lang="both">
+      <li class="v-card reveal">
+        <div class="v-top"><span class="v-num">01</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M4 41 L18 18 L25 28 L31 20 L44 41Z"/><path d="M31 20 V6 L40 9.5 L31 13"/></svg></span></div>
+        <h3 class="v-term">Action and Adventure Films</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films featuring exciting action, dangerous situations, physical challenges, and adventurous journeys.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Filma aksion dhe aventurë</strong> – filma që përmbajnë skena emocionuese, situata të rrezikshme, sfida fizike dhe udhëtime aventureske.</span></p>
+        <p class="v-ex">In this edition: <a href="#hours-127">127 Hours</a>, <a href="#sherlock-holmes">Sherlock Holmes</a></p>
+      </li>
+      <li class="v-card reveal d1">
+        <div class="v-top"><span class="v-num">02</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M8 40 L11 30 L33 8 L40 15 L18 37Z"/><path d="M29 12 L36 19"/><path d="M8 40 L18 37"/><path d="M38 29v9M33.5 33.5h9"/></svg></span></div>
+        <h3 class="v-term">Animations</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films created using drawings, computer-generated images, or other animation techniques to bring characters and stories to life.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Filma të animuar</strong> – filma të krijuar me vizatime, imazhe kompjuterike ose teknika të tjera animacioni.</span></p>
+      </li>
+      <li class="v-card reveal d2">
+        <div class="v-top"><span class="v-num">03</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="20" cy="20" r="13"/><path d="M29.5 29.5 L42 42"/><path d="M14 20a6 6 0 0 1 12 0M16.5 24.5a4 4 0 0 0 7 0"/></svg></span></div>
+        <h3 class="v-term">Crime Films</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films that focus on criminal activities, investigations, detectives, and the world of crime.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Filma kriminalë</strong> – filma që përqendrohen te aktivitetet kriminale, hetimet, detektivët dhe bota e krimit.</span></p>
+        <p class="v-ex">In this edition: <a href="#sherlock-holmes">Sherlock Holmes</a></p>
+      </li>
+      <li class="v-card reveal">
+        <div class="v-top"><span class="v-num">04</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="4" y="18" width="28" height="20"/><path d="M32 24 L44 18 V38 L32 32"/><circle cx="12" cy="11" r="5"/><circle cx="24" cy="11" r="5"/></svg></span></div>
+        <h3 class="v-term">Documentaries</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films that present real people, events, places, or situations to inform or educate the audience.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Dokumentarë</strong> – filma që paraqesin njerëz, ngjarje, vende ose situata reale për të informuar ose edukuar publikun.</span></p>
+      </li>
+      <li class="v-card reveal d1">
+        <div class="v-top"><span class="v-num">05</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M7 11 H41 L37 6 H11Z"/><path d="M10 15H38"/><path d="M14 15V38M20 15V38M28 15V38M34 15V38"/><path d="M9 38H39V43H9Z"/></svg></span></div>
+        <h3 class="v-term">Historical Dramas</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films based on historical events or periods, often portraying important people and events from the past.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Drama historike</strong> – filma të bazuar në ngjarje ose periudha historike, që shpesh paraqesin figura dhe ngjarje të rëndësishme të së kaluarës.</span></p>
+        <p class="v-ex">In this edition: <a href="#the-kings-speech">The King’s Speech</a></p>
+      </li>
+      <li class="v-card reveal d2">
+        <div class="v-top"><span class="v-num">06</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M12 42V20a12 12 0 0 1 24 0V42l-4-4-4 4-4-4-4 4-4-4z"/><circle cx="19" cy="22" r="1.6" fill="currentColor"/><circle cx="29" cy="22" r="1.6" fill="currentColor"/><path d="M21 30q3 2.5 6 0"/></svg></span></div>
+        <h3 class="v-term">Horror Films</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films designed to frighten, shock, or create feelings of fear and suspense.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Filma horror / tmerri</strong> – filma që synojnë të frikësojnë, të tronditin ose të krijojnë ndjenja frike dhe ankthi.</span></p>
+        <p class="v-ex">In this edition: <a href="#let-me-in">Let Me In</a></p>
+      </li>
+      <li class="v-card reveal">
+        <div class="v-top"><span class="v-num">07</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M18 36V10l20-4v26"/><circle cx="13" cy="36" r="5"/><circle cx="33" cy="32" r="5"/><path d="M18 16.5l20-4"/></svg></span></div>
+        <h3 class="v-term">Musicals</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films in which songs, music, and sometimes dancing are important parts of the story.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Muzikalë</strong> – filma ku këngët, muzika dhe ndonjëherë vallëzimi janë pjesë të rëndësishme të historisë.</span></p>
+      </li>
+      <li class="v-card reveal d1">
+        <div class="v-top"><span class="v-num">08</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 41S6 30 6 17.5a9 9 0 0 1 18-3 9 9 0 0 1 18 3C42 30 24 41 24 41z"/><path d="M18 22q6 6 12 0"/></svg></span></div>
+        <h3 class="v-term">Romantic Comedies</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films that combine love stories with humour and funny situations.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Komedi romantike</strong> – filma që ndërthurin historitë e dashurisë me humorin dhe situatat komike.</span></p>
+        <p class="v-ex">In this edition: <a href="#the-proposal">The Proposal</a></p>
+      </li>
+      <li class="v-card reveal d2">
+        <div class="v-top"><span class="v-num">09</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="25" r="10"/><ellipse cx="24" cy="25" rx="20" ry="6.5" transform="rotate(-20 24 25)"/><path d="M39 4l1.5 3 3 1.5-3 1.5L39 13l-1.5-3-3-1.5 3-1.5z"/></svg></span></div>
+        <h3 class="v-term">Science Fiction or Fantasy Films</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films that explore imaginary worlds, futuristic technology, space, magic, or supernatural elements.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Filma fantastiko-shkencorë ose fantazi</strong> – filma që eksplorojnë botë imagjinare, teknologji futuriste, hapësirën, magjinë ose elemente mbinatyrore.</span></p>
+      </li>
+      <li class="v-card reveal">
+        <div class="v-top"><span class="v-num">10</span><span class="v-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><circle cx="24" cy="27" r="15"/><path d="M24 27V18M24 27l6 4M20 5h8M24 5v7M37 13l3-3"/></svg></span></div>
+        <h3 class="v-term">Thrillers</h3>
+        <p class="v-def v-en"><span class="tag">EN</span><span>Films that create excitement, tension, suspense, and uncertainty, keeping viewers on the edge of their seats.</span></p>
+        <p class="v-def v-sq" lang="sq"><span class="tag">SQ</span><span><strong>Filma thriller / triller</strong> – filma që krijojnë emocion, tension, ankth dhe pasiguri, duke e mbajtur publikun në ankth deri në fund.</span></p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- =====================================================================
+     EXAMPLE SENTENCES TABLE — talking about movie preferences
+     ===================================================================== -->
+<section class="prefs" id="preferences" aria-labelledby="t-prefs">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="kicker center">Vocabulary in Use</p>
+      <h2 id="t-prefs">Talking About Your Movie Preferences</h2>
+    </header>
+
+    <div class="table-wrap reveal">
+      <table class="pref-table">
+        <caption>Five ways to say how you feel about a film genre — from the strongest like to the strongest dislike.</caption>
+        <thead><tr><th scope="col">Expression</th><th scope="col">Example Sentence</th></tr></thead>
+        <tbody>
+          <tr><td><span class="expr">I love…</span><span class="meter" style="--m:#e9c77a" aria-label="Strength: very strong like"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span></td><td>I love <em>action and adventure films</em> because they are exciting.</td></tr>
+          <tr><td><span class="expr">I really like…</span><span class="meter" style="--m:#d6b673" aria-label="Strength: strong like"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span></td><td>I really like <em>animations</em> because they have creative stories.</td></tr>
+          <tr><td><span class="expr">I quite like…</span><span class="meter" style="--m:#b9a57a" aria-label="Strength: mild like"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span></td><td>I quite like <em>historical dramas</em> because I enjoy learning about the past.</td></tr>
+          <tr><td><span class="expr">I don’t really like…</span><span class="meter" style="--m:#b36a5c" aria-label="Strength: mild dislike"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span></td><td>I don’t really like <em>horror films</em> because they are too scary.</td></tr>
+          <tr><td><span class="expr">I can’t stand…</span><span class="meter" style="--m:#c23d33" aria-label="Strength: very strong dislike"><i class="on"></i><i></i><i></i><i></i><i></i></span></td><td>I can’t stand <em>boring documentaries</em> because they make me lose interest.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="scale-note">
+      <div class="reveal">
+        <div class="scale-ends"><span>Strong like</span><span>Strong dislike</span></div>
+        <div class="scale-bar" aria-hidden="true"></div>
+        <div class="scale-ticks"><span>I love…</span><span>I really like…</span><span>I quite like…</span><span>I don’t really like…</span><span>I can’t stand…</span></div>
+      </div>
+      <div class="note-box reveal d1">
+        <h3>How strong is each expression?</h3>
+        <p>The five expressions go from the strongest positive feeling to the strongest negative one. <strong>I love…</strong> shows a very strong preference. <strong>I really like…</strong> is strongly positive. <strong>I quite like…</strong> is positive but moderate. <strong>I don’t really like…</strong> is a mild, polite way to show dislike. <strong>I can’t stand…</strong> expresses a very strong dislike.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =====================================================================
+     ABOUT THIS EDITION — closing page
+     ===================================================================== -->
+<section class="about" id="about" aria-labelledby="t-about">
+  <div class="wrap">
+    <p class="kicker center reveal">Section 08 · About This Edition</p>
+    <h2 class="about-title reveal" id="t-about">Film Club <em>Favorites</em></h2>
+    <blockquote class="about-quote reveal">“Every film has a story. Every story leaves an impression.”</blockquote>
+    <div class="publisher reveal"><span>Published by:</span><strong>Dean</strong></div>
+
+    <div class="contrib reveal" aria-label="Contributors">
+      <a href="#the-proposal"><strong>Aila</strong><small>The Proposal</small></a>
+      <a href="#my-sisters-keeper"><strong>Era</strong><small>My Sister’s Keeper</small></a>
+      <a href="#let-me-in"><strong>Sindi</strong><small>Let Me In</small></a>
+      <a href="#hours-127"><strong>Klea</strong><small>127 Hours</small></a>
+      <a href="#the-kings-speech"><strong>Altea</strong><small>The King’s Speech</small></a>
+      <a href="#sherlock-holmes"><strong>Erald</strong><small>Sherlock Holmes</small></a>
+    </div>
+
+    <div class="about-actions reveal">
+      <button class="btn" type="button" data-print>Print or Save as PDF</button>
+      <a class="btn ghost" href="#cover">Back to the Cover</a>
+    </div>
+    <p class="fine reveal">All illustrations in this edition are original artwork created for the magazine.</p>
+  </div>
+  <footer class="footer">
+    <div class="wrap"><span>© 2026 Film Club Favorites – Digital Magazine Edition</span><a href="#cover">Back to top ↑</a></div>
+  </footer>
+</section>
+
+</main>
+
+<!-- Back-to-top button -->
+<button class="to-top" id="toTop" type="button" aria-label="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
+<!-- Image lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer" hidden>
+  <span class="lb-count" aria-live="polite"></span>
+  <button class="lb-btn lb-close" type="button" aria-label="Close image viewer"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  <button class="lb-btn lb-prev" type="button" aria-label="Previous image"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <figure class="lb-figure"><div class="lb-media"></div><figcaption class="lb-cap"></figcaption></figure>
+  <button class="lb-btn lb-next" type="button" aria-label="Next image"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+</div>
+
+<script>
+'use strict';
+/* =======================================================================
+   A. OPTIONAL PHOTOS
+   Every picture in the magazine is an original SVG illustration, so the
+   site always works offline and never shows a broken image.
+   To use your own poster or film still instead, put the image file in a
+   folder called "images" next to index.html and write its path here,
+   e.g.  'proposal:key': 'images/the-proposal-poster.jpg'
+   If a file is missing, the illustration is kept automatically.
+   ======================================================================= */
+const MEDIA = {
+  'proposal:key':'', 'proposal:s1':'', 'proposal:s2':'', 'proposal:s3':'',
+  'msk:key':'',      'msk:s1':'',      'msk:s2':'',      'msk:s3':'',
+  'lmi:key':'',      'lmi:s1':'',      'lmi:s2':'',      'lmi:s3':'',
+  'hours:key':'',    'hours:s1':'',    'hours:s2':'',    'hours:s3':'',
+  'king:key':'',     'king:s1':'',     'king:s2':'',     'king:s3':'',
+  'sherlock:key':'', 'sherlock:s1':'', 'sherlock:s2':'', 'sherlock:s3':''
+};
+
+/* =======================================================================
+   B. SVG ILLUSTRATION TOOLKIT
+   Small helpers that draw skies, seas, towns, trees and objects.
+   Each illustration receives a unique prefix "p" so gradient ids never clash.
+   ======================================================================= */
+const f1 = n => Math.round(n * 10) / 10;
+const stop = (o, c, a = 1) => `<stop offset="${o}" stop-color="${c}" stop-opacity="${a}"/>`;
+const LG = (id, s, x2 = 0, y2 = 1) => `<linearGradient id="${id}" x1="0" y1="0" x2="${x2}" y2="${y2}">${s.map(a => stop(...a)).join('')}</linearGradient>`;
+const RG = (id, s, cx = .5, cy = .5, r = .5) => `<radialGradient id="${id}" cx="${cx}" cy="${cy}" r="${r}">${s.map(a => stop(...a)).join('')}</radialGradient>`;
+/* Seeded random numbers: the same picture is drawn every time */
+function rng(seed) { let s = (seed * 7919 + 104729) % 2147483647; if (s <= 0) s += 2147483646; return () => (s = s * 16807 % 2147483647) / 2147483647; }
+
+/* Wraps a drawing in an <svg> with a soft cinematic vignette */
+function SVG(W, H, body, label, p, vig = .62) {
+  const v = vig ? `<defs>${RG(p + 'vg', [[.45, '#000', 0], [1, '#000', vig]], .5, .5, .75)}</defs><rect width="${W}" height="${H}" fill="url(#${p}vg)"/>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${label}">${body}${v}</svg>`;
+}
+function stars(W, maxY, n, seed, col = '#fff') { const r = rng(seed); let s = ''; for (let i = 0; i < n; i++) s += `<circle cx="${f1(r() * W)}" cy="${f1(r() * maxY)}" r="${f1(r() * 1.3 + .35)}" fill="${col}" opacity="${f1(r() * .7 + .2)}"/>`; return s; }
+function snowfall(W, H, n, seed) { const r = rng(seed); let s = ''; for (let i = 0; i < n; i++) s += `<circle cx="${f1(r() * W)}" cy="${f1(r() * H)}" r="${f1(r() * 2.4 + .6)}" fill="#eef4fb" opacity="${f1(r() * .6 + .25)}"/>`; return s; }
+function ridge(W, bottom, base, amp, seed, n, fill, op = 1) {
+  const r = rng(seed), pts = []; for (let i = 0; i <= n; i++) pts.push([W * i / n, base - r() * amp]);
+  let d = `M0 ${bottom}L0 ${f1(pts[0][1])}`;
+  for (let i = 1; i <= n; i++) { const [a, b] = pts[i - 1], [c, e] = pts[i]; d += `Q${f1(a)} ${f1(b)} ${f1((a + c) / 2)} ${f1((b + e) / 2)}`; }
+  return `<path d="${d}L${W} ${f1(pts[n][1])}L${W} ${bottom}Z" fill="${fill}" opacity="${op}"/>`;
+}
+/* A row of houses with gabled roofs, chimneys and lit windows */
+function houses(x0, x1, base, minH, maxH, seed, fill, win, rate, o = {}) {
+  const r = rng(seed), u = o.u || 1; let d = '', w = '', x = x0;
+  while (x < x1) {
+    const bw = (o.minW || 24) * u + r() * (o.varW || 36) * u, h = minH + r() * (maxH - minH), t = base - h;
+    d += `M${f1(x)} ${base}V${f1(t)}`;
+    if (r() < (o.gable ?? .6)) d += `L${f1(x + bw / 2)} ${f1(t - bw * .42)}L${f1(x + bw)} ${f1(t)}`;
+    else { if (o.chimney && r() < .6) { const cx = x + bw * (.2 + r() * .5); d += `H${f1(cx)}v${-10 * u}h${7 * u}V${f1(t)}`; } d += `H${f1(x + bw)}`; }
+    d += `V${base}Z`;
+    const ws = 6 * u, wh = 9 * u, sx = 13 * u, sy = 16 * u;
+    for (let yy = t + 7 * u; yy + wh < base - 4 * u; yy += sy) for (let xx = x + 5 * u; xx + ws < x + bw - 3 * u; xx += sx)
+      if (r() < rate) w += `<rect x="${f1(xx)}" y="${f1(yy)}" width="${f1(ws)}" height="${f1(wh)}" fill="${win}" opacity="${f1(.55 + r() * .45)}"/>`;
+    x += bw + (o.gap || 0);
+  }
+  return `<path d="${d}" fill="${fill}"/>${w}`;
+}
+/* City blocks: "modern" towers or "old" Victorian roofs with chimneys and domes */
+function blocks(x0, x1, base, a, b2, mw, Mw, seed, fill, win, rate, style) {
+  const r = rng(seed); let d = '', w = '', x = x0;
+  while (x < x1) {
+    const bw = mw + r() * (Mw - mw), h = a + r() * (b2 - a), t = base - h;
+    d += `M${f1(x)} ${base}V${f1(t)}`;
+    if (style === 'modern') {
+      if (r() < .22) d += `H${f1(x + bw * .42)}V${f1(t - h * .12)}H${f1(x + bw * .58)}V${f1(t)}`;
+      else if (r() < .14) d += `H${f1(x + bw * .48)}V${f1(t - 44)}h3V${f1(t)}`;
+    } else if (r() < .16) d += `H${f1(x + bw * .2)}A${f1(bw * .3)} ${f1(bw * .3)} 0 0 1 ${f1(x + bw * .8)} ${f1(t)}`;
+    else { const n = 1 + Math.floor(r() * 3); for (let i = 0; i < n; i++) { const cx = x + bw * (.12 + i * .28); d += `H${f1(cx)}V${f1(t - 9 - r() * 8)}h${f1(6 + r() * 4)}V${f1(t)}`; } }
+    d += `H${f1(x + bw)}V${base}Z`;
+    if (win) for (let yy = t + 8; yy + 7 < base - 6; yy += 14) for (let xx = x + 6; xx + 5 < x + bw - 5; xx += 10)
+      if (r() < rate) w += `<rect x="${f1(xx)}" y="${f1(yy)}" width="4" height="7" fill="${win}" opacity="${f1(.45 + r() * .55)}"/>`;
+    x += bw;
+  }
+  return `<path d="${d}" fill="${fill}"/>${w}`;
+}
+function clockTower(x, b, h, f, face) {
+  const w = h * .1;
+  return `<path d="M${f1(x - w / 2)} ${b}V${f1(b - h * .72)}h${f1(-w * .1)}v${f1(-h * .04)}H${f1(x + w * .6)}v${f1(h * .04)}h${f1(-w * .1)}V${b}Z M${f1(x - w * .55)} ${f1(b - h * .76)}L${x} ${f1(b - h)}L${f1(x + w * .55)} ${f1(b - h * .76)}Z" fill="${f}"/><circle cx="${x}" cy="${f1(b - h * .66)}" r="${f1(w * .32)}" fill="${face}"/>`;
+}
+function pine(x, b, h, f, sn) {
+  const w = h * .36;
+  const d = `M${f1(x)} ${f1(b - h)}L${f1(x + w * .45)} ${f1(b - h * .6)}H${f1(x + w * .22)}L${f1(x + w * .72)} ${f1(b - h * .3)}H${f1(x + w * .42)}L${f1(x + w)} ${f1(b - h * .06)}H${f1(x + w * .1)}V${b}H${f1(x - w * .1)}V${f1(b - h * .06)}H${f1(x - w)}L${f1(x - w * .42)} ${f1(b - h * .3)}H${f1(x - w * .72)}L${f1(x - w * .22)} ${f1(b - h * .6)}H${f1(x - w * .45)}Z`;
+  let s = `<path d="${d}" fill="${f}"/>`;
+  if (sn) s += `<path d="M${f1(x)} ${f1(b - h)}L${f1(x + w * .16)} ${f1(b - h * .86)}L${f1(x - w * .16)} ${f1(b - h * .86)}Z M${f1(x + w * .22)} ${f1(b - h * .6)}H${f1(x + w * .45)}L${f1(x + w * .36)} ${f1(b - h * .57)}H${f1(x + w * .16)}Z M${f1(x - w * .22)} ${f1(b - h * .6)}H${f1(x - w * .45)}L${f1(x - w * .36)} ${f1(b - h * .57)}H${f1(x - w * .16)}Z M${f1(x + w * .42)} ${f1(b - h * .3)}H${f1(x + w * .72)}L${f1(x + w * .6)} ${f1(b - h * .27)}H${f1(x + w * .36)}Z M${f1(x - w * .42)} ${f1(b - h * .3)}H${f1(x - w * .72)}L${f1(x - w * .6)} ${f1(b - h * .27)}H${f1(x - w * .36)}Z" fill="${sn}" opacity=".75"/>`;
+  return s;
+}
+function lighthouse(p, x, b, h, c, lamp) {
+  const tw = h * .14, bw = h * .22, t = b - h;
+  return `<circle cx="${x}" cy="${f1(t - 12)}" r="${f1(h * .5)}" fill="url(#${p}lh)"/><path d="M${x} ${f1(t - 12)}L${f1(x - h * 1.6)} ${f1(t - h * .32)}L${f1(x - h * 1.6)} ${f1(t + h * .12)}Z" fill="${lamp}" opacity=".13"/><path d="M${f1(x - bw / 2)} ${b}L${f1(x - tw / 2)} ${f1(t)}H${f1(x + tw / 2)}L${f1(x + bw / 2)} ${b}Z" fill="${c}"/><rect x="${f1(x - tw / 2 - 5)}" y="${f1(t - 4)}" width="${f1(tw + 10)}" height="5" fill="${c}"/><rect x="${f1(x - tw / 2 + 2)}" y="${f1(t - 22)}" width="${f1(tw - 4)}" height="18" fill="${lamp}"/><path d="M${f1(x - tw / 2 - 3)} ${f1(t - 22)}L${x} ${f1(t - 42)}L${f1(x + tw / 2 + 3)} ${f1(t - 22)}Z" fill="${c}"/>`;
+}
+const boat = (x, y, sc, c) => `<g transform="translate(${x} ${y}) scale(${sc})" fill="${c}"><path d="M-32 0H32L23 10H-23Z"/><path d="M-1 -3V-62L28 -5Z"/><path d="M-5 -5V-46L-27 -5Z" opacity=".85"/></g>`;
+function girl(x, b, h, f) {
+  return `<g fill="${f}"><circle cx="${x}" cy="${f1(b - h * .9)}" r="${f1(h * .075)}"/><path d="M${f1(x - h * .075)} ${f1(b - h * .9)}Q${f1(x - h * .1)} ${f1(b - h * .75)} ${f1(x - h * .06)} ${f1(b - h * .68)}H${f1(x + h * .06)}Q${f1(x + h * .1)} ${f1(b - h * .75)} ${f1(x + h * .075)} ${f1(b - h * .9)}Z"/><path d="M${f1(x - h * .09)} ${f1(b - h * .8)}Q${x} ${f1(b - h * .84)} ${f1(x + h * .09)} ${f1(b - h * .8)}L${f1(x + h * .16)} ${f1(b - h * .32)}H${f1(x - h * .16)}Z"/></g><path d="M${f1(x - h * .05)} ${f1(b - h * .33)}V${b}M${f1(x + h * .05)} ${f1(b - h * .33)}V${b}" stroke="${f}" stroke-width="${f1(h * .035)}" stroke-linecap="round"/>`;
+}
+function gent(x, b, h, f) {
+  const k = h;
+  return `<g fill="${f}"><rect x="${f1(x - k * .06)}" y="${f1(b - k)}" width="${f1(k * .12)}" height="${f1(k * .1)}"/><rect x="${f1(x - k * .1)}" y="${f1(b - k * .91)}" width="${f1(k * .2)}" height="${f1(k * .02)}"/><circle cx="${x}" cy="${f1(b - k * .84)}" r="${f1(k * .06)}"/><path d="M${f1(x - k * .13)} ${f1(b - k * .76)}Q${x} ${f1(b - k * .8)} ${f1(x + k * .13)} ${f1(b - k * .76)}L${f1(x + k * .19)} ${f1(b - k * .3)}L${f1(x + k * .08)} ${f1(b - k * .33)}L${f1(x + k * .07)} ${b}H${f1(x + k * .02)}L${x} ${f1(b - k * .3)}L${f1(x - k * .02)} ${b}H${f1(x - k * .07)}L${f1(x - k * .08)} ${f1(b - k * .33)}L${f1(x - k * .19)} ${f1(b - k * .3)}Z"/></g><path d="M${f1(x + k * .16)} ${f1(b - k * .55)}L${f1(x + k * .25)} ${b}" stroke="${f}" stroke-width="${f1(k * .014)}"/>`;
+}
+
+/* ---------- Scene builders ---------- */
+
+/* Seascape at sunrise/sunset: sky, sun, sea, reflection, distant town,
+   lighthouse, boats, beach, figures and a kite (all optional) */
+function coast(p, W, H, o) {
+  const hz = o.hz, r = rng(o.seed), sun = o.sun;
+  let s = `<defs>${LG(p + 's', o.sky)}${LG(p + 'w', o.sea)}${RG(p + 'g', [[0, sun.glow, .85], [.35, sun.glow, .28], [1, sun.glow, 0]])}${RG(p + 'c', [[0, '#fffaf0'], [.55, sun.core], [1, sun.core]])}${o.sand ? LG(p + 'sd', [[0, o.sand.c1], [1, o.sand.c2]]) : ''}${o.lighthouse ? RG(p + 'lh', [[0, o.lighthouse.lamp, .9], [1, o.lighthouse.lamp, 0]]) : ''}</defs>`;
+  s += `<rect width="${W}" height="${hz + 2}" fill="url(#${p}s)"/>`;
+  s += `<circle cx="${sun.x}" cy="${sun.y}" r="${sun.r * 5.5}" fill="url(#${p}g)"/><circle cx="${sun.x}" cy="${sun.y}" r="${sun.r}" fill="url(#${p}c)"/>`;
+  for (let i = 0; i < o.clouds; i++) s += `<ellipse cx="${f1(r() * W)}" cy="${f1(hz * (.2 + r() * .62))}" rx="${f1(W * (.06 + r() * .16))}" ry="${f1(2.5 + r() * 6)}" fill="${o.cloud}" opacity="${f1(.14 + r() * .26)}"/>`;
+  if (o.shore) {
+    s += ridge(W, hz + 1, hz, o.shore.h, o.seed + 1, 9, o.shore.fill);
+    if (o.shore.town) s += houses(o.shore.town[0], o.shore.town[1], hz + 1, 6, o.shore.h * .55, o.seed + 2, o.shore.tf, o.shore.win, .3, { u: .55, gable: .65 });
+  }
+  s += `<rect y="${hz}" width="${W}" height="${H - hz}" fill="url(#${p}w)"/>`;
+  for (let y = hz + 4; y < H; y += 10) {
+    const k = (y - hz) / (H - hz), w = sun.r * (.7 + k * 5) * (.4 + r() * .7);
+    s += `<rect x="${f1(sun.x - w / 2 + (r() - .5) * sun.r * .8)}" y="${y}" width="${f1(w)}" height="${f1(1.4 + k * 3)}" rx="1.5" fill="${sun.glow}" opacity="${f1(.65 * (1 - k) + .04)}"/>`;
+  }
+  if (o.lighthouse) {
+    const L = o.lighthouse, x = L.x, b = hz - 12;
+    s += `<path d="M${x - 170} ${hz + 60}Q${x - 100} ${hz - 4} ${x - 24} ${hz - 10}Q${x + 40} ${hz - 26} ${x + 170} ${hz - 4}L${x + 170} ${hz + 90}Z" fill="${L.c}"/>` + lighthouse(p, x, b, L.h, L.c, L.lamp);
+  }
+  (o.boats || []).forEach(([x, y, sc, c]) => s += boat(x, y, sc, c));
+  if (o.sand) {
+    const y = o.sand.y;
+    s += `<path d="M0 ${H}V${y}Q${W * .35} ${y - 24} ${W * .65} ${y - 4}T${W} ${y - 14}V${H}Z" fill="url(#${p}sd)"/><path d="M0 ${y - 1}Q${W * .35} ${y - 25} ${W * .65} ${y - 5}T${W} ${y - 15}" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3"/>`;
+  }
+  if (o.figs) {
+    const F = o.figs, h2 = F.h * .84, sw = f1(F.h * .03);
+    s += girl(F.x1, F.b, F.h, F.f) + girl(F.x2, F.b, h2, F.f);
+    s += `<path d="M${f1(F.x1 + F.h * .1)} ${f1(F.b - F.h * .76)}L${f1((F.x1 + F.x2) / 2)} ${f1(F.b - F.h * .5)}L${f1(F.x2 - h2 * .1)} ${f1(F.b - h2 * .76)}M${f1(F.x1 - F.h * .1)} ${f1(F.b - F.h * .76)}L${f1(F.x1 - F.h * .14)} ${f1(F.b - F.h * .48)}M${f1(F.x2 + h2 * .1)} ${f1(F.b - h2 * .76)}L${f1(F.x2 + h2 * .14)} ${f1(F.b - h2 * .48)}" fill="none" stroke="${F.f}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  }
+  if (o.kite) {
+    const [x, y] = o.kite;
+    s += `<path d="M${x - 300} ${H}Q${x - 170} ${y + 220} ${x} ${y + 40}" fill="none" stroke="#5c6680" stroke-width="1.2" opacity=".7"/><path d="M${x} ${y - 40}L${x + 28} ${y}L${x} ${y + 40}L${x - 28} ${y}Z" fill="#e98b7a"/><path d="M${x} ${y - 40}V${y + 40}M${x - 28} ${y}H${x + 28}" stroke="#fff" stroke-opacity=".6" stroke-width="1.5"/><path d="M${x} ${y + 40}q16 30 0 60t0 60" fill="none" stroke="#e98b7a" stroke-width="2"/>`;
+  }
+  (o.birds || []).forEach(([x, y, sc]) => s += `<path d="M${x} ${y}q${f1(8 * sc)} ${f1(-7 * sc)} ${f1(16 * sc)} 0q${f1(8 * sc)} ${f1(-7 * sc)} ${f1(16 * sc)} 0" fill="none" stroke="${o.birdC}" stroke-width="${f1(1.6 * sc + .4)}" stroke-linecap="round"/>`);
+  return s;
+}
+
+/* Small-town street at dusk with string lights */
+function mainStreet(p, W, H) {
+  const g = H * .84;
+  let s = `<defs>${LG(p + 's', [[0, '#141a33'], [.55, '#5b2f52'], [1, '#e58a64']])}${RG(p + 'b', [[0, '#ffe6a8', .95], [.3, '#ffc66e', .35], [1, '#ffc66e', 0]])}${LG(p + 'g', [[0, '#2a1520'], [1, '#0d070b']])}</defs>`;
+  s += `<rect width="${W}" height="${H}" fill="url(#${p}s)"/>` + stars(W, H * .35, 40, 4, '#ffe9d0');
+  s += houses(-20, W + 20, H * .7, 40, 90, 21, '#3a2036', '#ffcf85', .18, { gable: .7 });
+  s += houses(-30, W + 40, g, 150, 230, 8, '#1b0f19', '#ffcd7a', .45, { u: 2.1, gable: .85, minW: 30, varW: 26, gap: 6, chimney: true });
+  s += `<rect y="${g}" width="${W}" height="${H - g}" fill="url(#${p}g)"/>`;
+  const poles = [[70, g - 250], [600, g - 275], [1130, g - 250]];
+  poles.forEach(([x, y]) => s += `<rect x="${x - 3}" y="${y}" width="6" height="${g - y}" fill="#0e080c"/>`);
+  for (let i = 0; i < poles.length - 1; i++) {
+    const [a, b] = poles[i], [c, d] = poles[i + 1], mx = (a + c) / 2, my = Math.max(b, d) + 120;
+    s += `<path d="M${a} ${b}Q${mx} ${my} ${c} ${d}" fill="none" stroke="#0e080c" stroke-width="2"/>`;
+    for (let t = .05; t < 1; t += .06) {
+      const x = (1 - t) ** 2 * a + 2 * (1 - t) * t * mx + t * t * c, y = (1 - t) ** 2 * b + 2 * (1 - t) * t * my + t * t * d;
+      s += `<circle cx="${f1(x)}" cy="${f1(y + 6)}" r="26" fill="url(#${p}b)"/><circle cx="${f1(x)}" cy="${f1(y + 6)}" r="3.6" fill="#fff1c9"/>`;
+    }
+  }
+  s += `<ellipse cx="${W / 2}" cy="${g + 40}" rx="${W * .45}" ry="18" fill="#ffb46a" opacity=".12"/>`;
+  return s;
+}
+
+/* City skyline (modern or Victorian) with optional river, fog and smoke */
+function skyline(p, W, H, o) {
+  const b = o.base, glow = o.orb ? o.orb[3] : '#fff', fog = o.fog || '#fff';
+  let s = `<defs>${LG(p + 's', o.sky)}${o.water ? LG(p + 'w', o.water) : ''}${RG(p + 'g', [[0, glow, .7], [1, glow, 0]])}${LG(p + 'f', [[0, fog, 0], [.5, fog, .32], [1, fog, 0]])}</defs><rect width="${W}" height="${H}" fill="url(#${p}s)"/>`;
+  if (o.stars) s += stars(W, b * .55, o.stars, o.seed + 3, '#fff');
+  if (o.orb) { const [x, y, rr, c] = o.orb; s += `<circle cx="${x}" cy="${y}" r="${rr * 5}" fill="url(#${p}g)"/><circle cx="${x}" cy="${y}" r="${rr}" fill="${c}"/>`; }
+  s += blocks(-10, W + 10, b, o.far.min, o.far.max, 40, 90, o.seed, o.far.fill, null, 0, o.style);
+  if (o.fogs) s += `<rect y="${f1(b - o.far.max * .7)}" width="${W}" height="${f1(o.far.max * .8)}" fill="url(#${p}f)"/>`;
+  if (o.tower) s += clockTower(o.tower.x, b, o.tower.h, o.near.fill, o.tower.face);
+  s += blocks(-10, W + 10, b, o.near.min, o.near.max, 50, 110, o.seed + 9, o.near.fill, o.near.win, o.near.rate, o.style);
+  if (o.smoke) { const r = rng(o.seed + 40); for (let i = 0; i < 9; i++) { const x = r() * W, y = b - o.near.min - r() * 60; s += `<path d="M${f1(x)} ${f1(y)}c12 -30 -18 -50 2 -90s22 -40 -4 -84" fill="none" stroke="${fog}" stroke-opacity="${f1(.08 + r() * .12)}" stroke-width="${f1(6 + r() * 10)}" stroke-linecap="round"/>`; } }
+  if (o.water) {
+    s += `<rect y="${b}" width="${W}" height="${H - b}" fill="url(#${p}w)"/>`;
+    const r = rng(o.seed + 70); for (let i = 0; i < 110; i++) s += `<rect x="${f1(r() * W)}" y="${f1(b + 4 + r() * (H - b) * .7)}" width="${f1(2 + r() * 14)}" height="${f1(1.5 + r() * 2.5)}" fill="${o.near.win}" opacity="${f1(.1 + r() * .3)}"/>`;
+  } else s += `<rect y="${b}" width="${W}" height="${H - b}" fill="${o.near.fill}"/>`;
+  if (o.fogs) s += `<rect y="${f1(b - 70)}" width="${W}" height="140" fill="url(#${p}f)"/>`;
+  return s;
+}
+
+/* Bedroom window with morning light */
+function windowRoom(p, W, H) {
+  const wx = 420, wy = 90, ww = 380, wh = 420, fl = H * .86;
+  let s = `<defs>${LG(p + 'wall', [[0, '#cdb0a2'], [1, '#8f6f68']])}${LG(p + 'sky', [[0, '#b9d0e8'], [1, '#f9e4d2']])}${LG(p + 'ray', [[0, '#fff6e6', .5], [1, '#fff6e6', 0]])}${LG(p + 'cl', [[0, '#f3e6dc'], [.25, '#d6bfb2'], [.5, '#f7ece3'], [.75, '#d2b9ac'], [1, '#efe1d6']], 1, 0)}${LG(p + 'fl', [[0, '#7a5a52'], [1, '#3c2a28']])}<clipPath id="${p}cw"><rect x="${wx}" y="${wy}" width="${ww}" height="${wh}"/></clipPath></defs>`;
+  s += `<rect width="${W}" height="${H}" fill="url(#${p}wall)"/><rect y="${fl}" width="${W}" height="${H - fl}" fill="url(#${p}fl)"/>`;
+  s += `<rect x="${wx}" y="${wy}" width="${ww}" height="${wh}" fill="url(#${p}sky)"/><g clip-path="url(#${p}cw)"><ellipse cx="${wx + 120}" cy="${wy + 140}" rx="90" ry="16" fill="#fff" opacity=".6"/><ellipse cx="${wx + 270}" cy="${wy + 210}" rx="70" ry="11" fill="#fff" opacity=".5"/>${ridge(W, wy + wh + 2, wy + wh - 40, 60, 12, 14, '#9fb08f', .8)}${ridge(W, wy + wh + 2, wy + wh - 10, 40, 19, 18, '#7d8f6e')}</g>`;
+  s += `<path d="M${wx} ${wy + wh}L${wx + ww} ${wy + wh}L${wx + ww + 380} ${H}L${wx + 60} ${H}Z" fill="url(#${p}ray)"/>`;
+  s += `<path d="M${wx + 30} ${wy}L${wx + ww} ${wy}L${wx + ww + 300} ${fl}L${wx + 200} ${fl}Z" fill="#fff6e6" opacity=".07"/>`;
+  s += `<g fill="none" stroke="#f4ebe4" stroke-width="14"><rect x="${wx}" y="${wy}" width="${ww}" height="${wh}"/><path d="M${wx + ww / 2} ${wy}V${wy + wh}M${wx} ${wy + wh * .45}H${wx + ww}"/></g>`;
+  s += `<rect x="${wx - 40}" y="${wy + wh}" width="${ww + 80}" height="18" fill="#f4ebe4"/><rect x="${wx - 30}" y="${wy + wh + 18}" width="${ww + 60}" height="10" fill="#000" opacity=".12"/>`;
+  /* plant on the sill */
+  const px = wx + ww - 90, py = wy + wh;
+  s += `<g fill="#5f7a55">${[-60, -30, -5, 20, 45, 70].map((a, i) => `<ellipse cx="${px}" cy="${py - 44}" rx="9" ry="34" transform="rotate(${a} ${px} ${py - 20}) translate(0 ${-i % 2 * 6})"/>`).join('')}</g><path d="M${px - 26} ${py - 34}H${px + 26}L${px + 20} ${py}H${px - 20}Z" fill="#b8735a"/>`;
+  /* curtains */
+  s += `<rect x="${wx - 140}" y="30" width="${ww + 280}" height="8" fill="#6d5148"/>`;
+  s += `<path d="M${wx - 120} 36H${wx + 34}C${wx + 6} 240 ${wx + 60} 420 ${wx - 6} ${fl}H${wx - 130}C${wx - 96} 420 ${wx - 140} 240 ${wx - 120} 36Z" fill="url(#${p}cl)"/>`;
+  s += `<path d="M${wx + ww + 120} 36H${wx + ww - 34}C${wx + ww - 6} 240 ${wx + ww - 60} 420 ${wx + ww + 6} ${fl}H${wx + ww + 130}C${wx + ww + 96} 420 ${wx + ww + 140} 240 ${wx + ww + 120} 36Z" fill="url(#${p}cl)"/>`;
+  const r = rng(77); for (let i = 0; i < 40; i++) s += `<circle cx="${f1(wx + r() * 600)}" cy="${f1(wy + 100 + r() * 500)}" r="${f1(r() * 1.8 + .4)}" fill="#fff" opacity="${f1(r() * .5 + .2)}"/>`;
+  return s;
+}
+
+/* Backlit meadow with soft bokeh */
+function meadow(p, W, H) {
+  let s = `<defs>${LG(p + 's', [[0, '#2c2440'], [.5, '#9a6178'], [.85, '#f0b48f'], [1, '#f9d7ae']])}${RG(p + 'sun', [[0, '#fff1d6', .95], [.25, '#ffd3a0', .5], [1, '#ffd3a0', 0]])}</defs><rect width="${W}" height="${H}" fill="url(#${p}s)"/><circle cx="${W * .62}" cy="${H * .72}" r="${H * .6}" fill="url(#${p}sun)"/>`;
+  const r = rng(31), cols = ['#ffe2b8', '#f7b7a3', '#c9d6ec', '#fff'];
+  for (let i = 0; i < 46; i++) s += `<circle cx="${f1(r() * W)}" cy="${f1(r() * H * .85)}" r="${f1(8 + r() * 60)}" fill="${cols[i % 4]}" opacity="${f1(.05 + r() * .22)}"/>`;
+  let g = ''; for (let i = 0; i < 260; i++) { const x = r() * W, h = 60 + r() * 200, bend = (r() - .5) * 70; g += `M${f1(x)} ${H}Q${f1(x + bend * .4)} ${f1(H - h * .5)} ${f1(x + bend)} ${f1(H - h)}`; }
+  s += `<path d="${g}" stroke="#2a1a24" stroke-width="2.2" fill="none" stroke-linecap="round" opacity=".9"/>`;
+  for (let i = 0; i < 34; i++) { const x = r() * W, y = H - 90 - r() * 170; s += `<path d="M${f1(x)} ${H}Q${f1(x + 6)} ${f1((y + H) / 2)} ${f1(x)} ${f1(y)}" stroke="#2a1a24" stroke-width="1.6" fill="none"/><circle cx="${f1(x)}" cy="${f1(y)}" r="${f1(4 + r() * 5)}" fill="#2a1a24"/>`; }
+  return s;
+}
+
+/* Concrete apartment block with a grid of windows */
+function slab(x, b, w, h, shade, seed) {
+  const r = rng(seed), t = b - h, cols = Math.floor((w - 20) / 26), rows = Math.floor((h - 24) / 30);
+  let s = `<rect x="${x}" y="${t}" width="${w}" height="${h}" fill="${shade}"/>`;
+  for (let i = 0; i < rows; i++) {
+    s += `<rect x="${x}" y="${f1(t + 36 + i * 30)}" width="${w}" height="2" fill="#000" opacity=".35"/>`;
+    for (let j = 0; j < cols; j++) { const q = r(); const c = q < .07 ? '#f2c27a' : q < .12 ? '#9fbbd9' : '#0f1826'; s += `<rect x="${f1(x + 14 + j * 26)}" y="${f1(t + 16 + i * 30)}" width="14" height="18" fill="${c}"/>`; }
+  }
+  return s + `<rect x="${x - 3}" y="${t - 5}" width="${w + 6}" height="6" fill="#cfdcec" opacity=".8"/>`;
+}
+function snowyBlocks(p, W, H, o) {
+  const g = o.ground;
+  let s = `<defs>${LG(p + 's', [[0, '#02050b'], [.6, '#0c182b'], [1, '#22344f']])}${RG(p + 'm', [[0, '#dfeaf6', .55], [1, '#dfeaf6', 0]])}${LG(p + 'sn', [[0, '#c7d6e8'], [1, '#5d728f']])}</defs><rect width="${W}" height="${H}" fill="url(#${p}s)"/>`;
+  s += stars(W, g * .6, 90, o.seed, '#cfe0f5');
+  s += `<circle cx="${o.moon[0]}" cy="${o.moon[1]}" r="${o.moon[2] * 4}" fill="url(#${p}m)"/><circle cx="${o.moon[0]}" cy="${o.moon[1]}" r="${o.moon[2]}" fill="#e6eef7"/>`;
+  o.slabs.forEach(([x, w, h, c], i) => s += slab(x, g + 6, w, h, c, o.seed + i * 7));
+  s += `<path d="M0 ${g}Q${W * .3} ${g - 14} ${W * .6} ${g + 4}T${W} ${g - 6}V${H}H0Z" fill="url(#${p}sn)"/>`;
+  o.pines.forEach(([x, h]) => s += pine(x, g + 12, h, '#03070d', '#cfdcec'));
+  return s + snowfall(W, H, Math.round(W * H / 4000), o.seed + 5);
+}
+/* Climbing frame in the snow under a streetlamp */
+function climbingFrame(p, W, H) {
+  const g = H * .8, lx = 860, ly = g - 335;
+  let s = `<defs>${LG(p + 's', [[0, '#03060c'], [1, '#17263b']])}${LG(p + 'cone', [[0, '#ffe1a0', .45], [1, '#ffe1a0', .03]])}${RG(p + 'lamp', [[0, '#ffe6b0', .9], [1, '#ffe6b0', 0]])}${LG(p + 'sn', [[0, '#b9c9dc'], [1, '#4d607b']])}</defs><rect width="${W}" height="${H}" fill="url(#${p}s)"/>` + stars(W, H * .4, 60, 9, '#cfe0f5');
+  s += slab(40, g + 4, 300, 330, '#0b1320', 12) + slab(1000, g + 4, 230, 280, '#0b1320', 14);
+  s += `<path d="M0 ${g}Q${W * .4} ${g - 18} ${W} ${g + 6}V${H}H0Z" fill="url(#${p}sn)"/>`;
+  s += `<path d="M${lx} ${ly}L${lx - 280} ${g + 50}L${lx + 220} ${g + 50}Z" fill="url(#${p}cone)"/><ellipse cx="${lx - 30}" cy="${g + 40}" rx="230" ry="26" fill="#ffe1a0" opacity=".12"/>`;
+  s += `<rect x="${lx - 4}" y="${ly}" width="8" height="${g - ly + 10}" fill="#05080e"/><rect x="${lx - 20}" y="${ly - 14}" width="40" height="12" fill="#05080e"/><circle cx="${lx}" cy="${ly + 2}" r="90" fill="url(#${p}lamp)"/>`;
+  const fx = 300, fw = 400, fh = 170, fy = g - fh + 10, cols = 5, rows = 3;
+  let back = '', front = '';
+  for (let i = 0; i <= cols; i++) { const x = fx + i * fw / cols; back += `M${f1(x + 60)} ${fy - 40}V${g - 30}`; front += `M${f1(x)} ${fy}V${g + 10}M${f1(x)} ${fy}L${f1(x + 60)} ${fy - 40}`; }
+  for (let j = 0; j <= rows; j++) { const y = fy + j * fh / rows; back += `M${fx + 60} ${f1(y - 40)}H${fx + fw + 60}`; front += `M${fx} ${f1(y)}H${fx + fw}M${fx + fw} ${f1(y)}L${fx + fw + 60} ${f1(y - 40)}`; }
+  s += `<path d="${back}" stroke="#101b2c" stroke-width="6" fill="none" stroke-linecap="round"/><path d="${front}" stroke="#03060b" stroke-width="7" fill="none" stroke-linecap="round"/>`;
+  s += `<path d="M${fx} ${fy - 4}H${fx + fw}M${fx + 60} ${fy - 44}H${fx + fw + 60}" stroke="#dfe9f5" stroke-width="4" opacity=".8"/>`;
+  return s + snowfall(W, H, 150, 5);
+}
+/* Moonlit winter woods */
+function woods(p, W, H) {
+  const g = H * .82;
+  let s = `<defs>${LG(p + 's', [[0, '#02040a'], [.7, '#0d1a2e'], [1, '#2a3d58']])}${RG(p + 'm', [[0, '#e8f0f8', .55], [1, '#e8f0f8', 0]])}${LG(p + 'f', [[0, '#9db4cf', 0], [.5, '#9db4cf', .2], [1, '#9db4cf', 0]])}${LG(p + 'sn', [[0, '#8ea4c0'], [1, '#2c3d56']])}</defs><rect width="${W}" height="${H}" fill="url(#${p}s)"/>` + stars(W, H * .5, 120, 17, '#dbe7f5');
+  s += `<circle cx="${W * .52}" cy="${H * .4}" r="${H * .5}" fill="url(#${p}m)"/><circle cx="${W * .52}" cy="${H * .4}" r="${H * .12}" fill="#e9f0f8"/>`;
+  [['#1b2b42', 150, 23], ['#0e1a2b', 230, 41], ['#04090f', 340, 77]].forEach(([c, h, seed], li) => {
+    const r = rng(seed); let x = -20;
+    while (x < W + 40) { const hh = h * (.6 + r() * .6); s += pine(x, g + li * 14, hh, c, li === 2 ? '#cfdcec' : null); x += hh * .3 + r() * hh * .28; }
+    if (li < 2) s += `<rect y="${g - 170 + li * 40}" width="${W}" height="190" fill="url(#${p}f)"/>`;
+  });
+  s += `<path d="M0 ${g + 26}Q${W * .5} ${g + 6} ${W} ${g + 30}V${H}H0Z" fill="url(#${p}sn)"/>`;
+  return s + snowfall(W, H, 120, 21);
+}
+
+/* Narrow slot canyon with a beam of light (optional wedged boulder) */
+function slotCanyon(p, W, H, o) {
+  const r = rng(o.seed), n = 12, L = [], R = [];
+  for (let i = 0; i <= n; i++) {
+    const y = H * i / n, k = i / n, c = W * o.cx + Math.sin(k * 5.2 + o.seed) * W * .07 + (r() - .5) * W * .03, gap = W * (o.gTop * (1 - k) + o.gBot * k);
+    L.push([c - gap / 2, y]); R.push([c + gap / 2, y]);
+  }
+  const path = (pts, edge) => { let d = `M${edge} 0L${f1(pts[0][0])} 0`; for (let i = 1; i < pts.length; i++) { const [a, b] = pts[i - 1], [c, e] = pts[i]; d += `Q${f1(a)} ${f1(b)} ${f1((a + c) / 2)} ${f1((b + e) / 2)}`; } return d + `L${f1(pts[n][0])} ${H}L${edge} ${H}Z`; };
+  const dL = path(L, -5), dR = path(R, W + 5), c0 = (L[0][0] + R[0][0]) / 2, cB = (L[n][0] + R[n][0]) / 2;
+  let s = `<defs>${LG(p + 'bg', [[0, '#fff1c8'], [.25, '#ffc36e'], [.6, '#e2732f'], [1, '#5a1f0c']])}${LG(p + 'L', [[0, '#2a0d05'], [.7, '#8a3412'], [1, '#e2803a']], 1, 0)}${LG(p + 'R', [[0, '#d06a2c'], [.3, '#7a2c10'], [1, '#240b04']], 1, 0)}${LG(p + 'beam', [[0, '#fff6dc', .7], [1, '#fff6dc', 0]])}${LG(p + 'fl', [[0, '#000', 0], [1, '#000', .7]])}<clipPath id="${p}cw"><path d="${dL}"/><path d="${dR}"/></clipPath></defs><rect width="${W}" height="${H}" fill="url(#${p}bg)"/>`;
+  s += `<path d="M${f1(c0 - 14)} 0L${f1(c0 + 14)} 0L${f1(cB + 70)} ${H}L${f1(cB - 40)} ${H}Z" fill="url(#${p}beam)"/>`;
+  s += `<path d="${dL}" fill="url(#${p}L)"/><path d="${dR}" fill="url(#${p}R)"/>`;
+  let st = ''; for (let j = 0; j < 26; j++) { const y = r() * H, a = 6 + r() * 14; st += `M0 ${f1(y)}Q${W * .25} ${f1(y - a)} ${W * .5} ${f1(y)}T${W} ${f1(y)}`; }
+  s += `<g clip-path="url(#${p}cw)"><path d="${st}" fill="none" stroke="#2a0c03" stroke-opacity=".22" stroke-width="2"/></g>`;
+  if (o.boulder) {
+    const i = Math.round(o.boulder * n), y = H * o.boulder, bx = (L[i][0] + R[i][0]) / 2, half = (R[i][0] - L[i][0]) / 2 + 14;
+    s += `<path d="M${f1(bx - half)} ${f1(y)}Q${f1(bx - half * .8)} ${f1(y - half * .9)} ${f1(bx)} ${f1(y - half * .85)}Q${f1(bx + half * .9)} ${f1(y - half * .8)} ${f1(bx + half)} ${f1(y + 4)}Q${f1(bx + half * .6)} ${f1(y + half * .7)} ${f1(bx - half * .2)} ${f1(y + half * .6)}Q${f1(bx - half * .9)} ${f1(y + half * .5)} ${f1(bx - half)} ${f1(y)}Z" fill="#3a160a"/><path d="M${f1(bx - half * .6)} ${f1(y - half * .55)}Q${f1(bx)} ${f1(y - half * .9)} ${f1(bx + half * .5)} ${f1(y - half * .6)}" fill="none" stroke="#f7b46a" stroke-opacity=".5" stroke-width="3"/>`;
+  }
+  s += `<rect y="${H * .78}" width="${W}" height="${H * .22}" fill="url(#${p}fl)"/>`;
+  for (let i = 0; i < 46; i++) { const k = r(); s += `<circle cx="${f1(c0 + (cB - c0) * k + (r() - .5) * 60)}" cy="${f1(k * H)}" r="${f1(r() * 1.8 + .5)}" fill="#fff3d0" opacity="${f1(r() * .6 + .2)}"/>`; }
+  return s;
+}
+/* Desert mesas at sunset */
+function mesaLayer(W, base, maxH, seed, fill, op = 1) {
+  const r = rng(seed); let d = `M-10 ${base}`, x = -10;
+  while (x < W + 10) {
+    x += 30 + r() * 120; d += `L${f1(x)} ${f1(base - r() * 12)}`;
+    const h = maxH * (.35 + r() * .65), slope = 20 + r() * 30, top = 60 + r() * 220;
+    d += `L${f1(x + slope)} ${f1(base - h)}L${f1(x + slope + top * .4)} ${f1(base - h - r() * 6)}L${f1(x + slope + top)} ${f1(base - h)}`;
+    x += slope * 2 + top; d += `L${f1(x)} ${f1(base - r() * 10)}`;
+  }
+  return `<path d="${d}L${W + 10} ${base}L${W + 10} ${base + 300}L-10 ${base + 300}Z" fill="${fill}" opacity="${op}"/>`;
+}
+function mesas(p, W, H) {
+  const hz = H * .62;
+  let s = `<defs>${LG(p + 's', [[0, '#2b1533'], [.45, '#a8433c'], [.8, '#f39a4a'], [1, '#ffd98c']])}${RG(p + 'sun', [[0, '#fff3c9'], [.6, '#ffd27a'], [1, '#ffb050']])}${RG(p + 'g', [[0, '#ffcf7a', .7], [1, '#ffcf7a', 0]])}${LG(p + 'gr', [[0, '#4a1a0e'], [1, '#150604']])}</defs><rect width="${W}" height="${H}" fill="url(#${p}s)"/>`;
+  s += `<circle cx="${W * .36}" cy="${hz - 10}" r="280" fill="url(#${p}g)"/><circle cx="${W * .36}" cy="${hz - 10}" r="58" fill="url(#${p}sun)"/>`;
+  s += mesaLayer(W, hz + 6, 90, 3, '#b0584a', .85) + mesaLayer(W, hz + 40, 150, 8, '#6d2a1d') + mesaLayer(W, hz + 90, 110, 15, '#3a140b');
+  s += `<rect y="${hz + 88}" width="${W}" height="${H - hz - 88}" fill="url(#${p}gr)"/>`;
+  const r = rng(5); for (let i = 0; i < 40; i++) s += `<ellipse cx="${f1(r() * W)}" cy="${f1(hz + 110 + r() * (H - hz - 120))}" rx="${f1(6 + r() * 16)}" ry="${f1(3 + r() * 6)}" fill="#0d0402" opacity=".8"/>`;
+  s += `<path d="M820 210q12 -10 24 0q12 -10 24 0" fill="none" stroke="#2b1010" stroke-width="2.4" stroke-linecap="round"/>`;
+  return s;
+}
+/* Desert night with the Milky Way above the canyon rim */
+function desertNight(p, W, H) {
+  const cx = W / 2, cy = H * .4, a = -28 * Math.PI / 180, r = rng(51);
+  let s = `<defs>${LG(p + 's', [[0, '#03040d'], [.6, '#151634'], [1, '#3b2340']])}${LG(p + 'mw', [[0, '#c9b8ff', 0], [.5, '#e3d6ff', .22], [1, '#c9b8ff', 0]])}${RG(p + 'hz', [[0, '#e07a4a', .35], [1, '#e07a4a', 0]])}</defs><rect width="${W}" height="${H}" fill="url(#${p}s)"/>`;
+  s += `<g transform="rotate(-28 ${cx} ${cy})"><rect x="${-W * .2}" y="${cy - 120}" width="${W * 1.4}" height="240" fill="url(#${p}mw)"/></g>`;
+  s += stars(W, H * .85, 200, 52, '#fff');
+  for (let i = 0; i < 320; i++) { const x = -W * .2 + r() * W * 1.4, y = cy + (r() + r() + r() - 1.5) * 70, dx = x - cx, dy = y - cy, X = cx + dx * Math.cos(a) - dy * Math.sin(a), Y = cy + dx * Math.sin(a) + dy * Math.cos(a); s += `<circle cx="${f1(X)}" cy="${f1(Y)}" r="${f1(r() * .9 + .3)}" fill="#fff" opacity="${f1(r() * .7 + .15)}"/>`; }
+  s += `<path d="M880 120L980 170" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/>`;
+  s += `<ellipse cx="${W / 2}" cy="${H * .78}" rx="${W * .5}" ry="120" fill="url(#${p}hz)"/>`;
+  s += `<path d="M0 ${H * .45}C140 ${H * .44} 210 ${H * .52} 300 ${H * .62}S420 ${H * .75} 470 ${H}H0Z" fill="#0a0507"/><path d="M0 ${H * .45}C140 ${H * .44} 210 ${H * .52} 300 ${H * .62}S420 ${H * .75} 470 ${H}" fill="none" stroke="#e07a4a" stroke-opacity=".35" stroke-width="2"/>`;
+  s += `<path d="M${W} ${H * .38}C${W - 160} ${H * .4} ${W - 230} ${H * .5} ${W - 330} ${H * .6}S${W - 450} ${H * .76} ${W - 500} ${H}H${W}Z" fill="#0a0507"/><path d="M${W} ${H * .38}C${W - 160} ${H * .4} ${W - 230} ${H * .5} ${W - 330} ${H * .6}S${W - 450} ${H * .76} ${W - 500} ${H}" fill="none" stroke="#e07a4a" stroke-opacity=".3" stroke-width="2"/>`;
+  return s;
+}
+
+/* Vintage ribbon microphone against a velvet curtain */
+function microphone(p, W, H) {
+  const cx = W / 2, cy = H * .4;
+  let s = `<defs>${LG(p + 'fold', [[0, '#2a0614'], [.5, '#7d1d38'], [1, '#2a0614']], 1, 0)}${RG(p + 'spot', [[0, '#ffe2a8', .5], [.6, '#ffe2a8', .08], [1, '#ffe2a8', 0]])}${LG(p + 'metal', [[0, '#f3e2b0'], [.35, '#b08d4a'], [.6, '#ffe9b0'], [1, '#6e5326']], 1, 0)}${LG(p + 'dark', [[0, '#1a1410'], [1, '#3a2f22']], 1, 0)}</defs><rect width="${W}" height="${H}" fill="#24060f"/>`;
+  for (let i = 0; i < 9; i++) s += `<rect x="${f1(i * W / 9)}" width="${f1(W / 9 + 1)}" height="${H}" fill="url(#${p}fold)"/>`;
+  s += `<path d="M0 0H${W}V60Q${W * .75} 120 ${W / 2} 70Q${W * .25} 120 0 60Z" fill="#1a030a" opacity=".85"/>`;
+  s += `<ellipse cx="${cx}" cy="${cy}" rx="${W * .7}" ry="${H * .55}" fill="url(#${p}spot)"/>`;
+  s += `<rect x="${cx - 7}" y="${cy + 120}" width="14" height="${H}" fill="url(#${p}metal)"/><rect x="${cx - 8}" y="${cy + 112}" width="16" height="16" fill="url(#${p}metal)"/>`;
+  s += `<circle cx="${cx}" cy="${cy}" r="118" fill="none" stroke="url(#${p}metal)" stroke-width="10"/>`;
+  let z = '';
+  for (let k = 0; k < 8; k++) {
+    const an = k * Math.PI / 4 + Math.PI / 8, x1 = cx + Math.cos(an) * 113, y1 = cy + Math.sin(an) * 113, x2 = cx + Math.cos(an) * 68, y2 = cy + Math.sin(an) * 86, nx = -(y2 - y1), ny = x2 - x1, len = Math.hypot(nx, ny);
+    z += `M${f1(x1)} ${f1(y1)}`; for (let j = 1; j <= 6; j++) { const t = j / 6, sg = j % 2 ? 5 : -5; z += `L${f1(x1 + (x2 - x1) * t + nx / len * (j < 6 ? sg : 0))} ${f1(y1 + (y2 - y1) * t + ny / len * (j < 6 ? sg : 0))}`; }
+  }
+  s += `<path d="${z}" fill="none" stroke="#d9c08a" stroke-width="2"/>`;
+  s += `<rect x="${cx - 62}" y="${cy - 84}" width="124" height="168" rx="30" fill="url(#${p}metal)"/><rect x="${cx - 48}" y="${cy - 70}" width="96" height="140" rx="20" fill="url(#${p}dark)"/>`;
+  let gl = ''; for (let y = cy - 62; y < cy + 66; y += 7) gl += `M${cx - 44} ${y}H${cx + 44}`;
+  s += `<path d="${gl}" stroke="#c9a85e" stroke-width="1.6" opacity=".55"/><rect x="${cx - 56}" y="${cy - 78}" width="14" height="150" rx="7" fill="#fff" opacity=".18"/><circle cx="${cx}" cy="${cy + 96}" r="7" fill="#f3e2b0"/>`;
+  return s;
+}
+/* A crown resting on a velvet cushion */
+function crown(p, W, H) {
+  const cx = W / 2, by = H * .64, bw = 300, bh = 44, at = by - bh - 34;
+  let s = `<defs>${RG(p + 'bg', [[0, '#3a2440'], [1, '#07040a']], .5, .42, .7)}${LG(p + 'gold', [[0, '#fff0b8'], [.4, '#d4a845'], [.7, '#8a6420'], [1, '#e8c46a']])}${LG(p + 'cush', [[0, '#8c1f3c'], [1, '#3a0716']])}${RG(p + 'halo', [[0, '#ffe3a0', .35], [1, '#ffe3a0', 0]])}</defs><rect width="${W}" height="${H}" fill="url(#${p}bg)"/>`;
+  s += `<ellipse cx="${cx}" cy="${by - 80}" rx="440" ry="320" fill="url(#${p}halo)"/>`;
+  s += `<path d="M${cx - 300} ${by + 40}Q${cx - 320} ${by - 10} ${cx - 250} ${by - 20}H${cx + 250}Q${cx + 320} ${by - 10} ${cx + 300} ${by + 40}Q${cx + 320} ${by + 110} ${cx + 240} ${by + 120}H${cx - 240}Q${cx - 320} ${by + 110} ${cx - 300} ${by + 40}Z" fill="url(#${p}cush)"/>`;
+  [[cx - 300, by + 40], [cx + 300, by + 40]].forEach(([x, y]) => s += `<path d="M${x} ${y}v50" stroke="url(#${p}gold)" stroke-width="4"/><path d="M${x - 10} ${y + 50}h20l-4 40h-12z" fill="url(#${p}gold)"/>`);
+  s += `<path d="M${cx - bw / 2 + 14} ${at}C${cx - bw / 2 + 10} ${at - 140} ${cx + bw / 2 - 10} ${at - 140} ${cx + bw / 2 - 14} ${at}Z" fill="#6d0f2a"/>`;
+  s += `<rect x="${cx - bw / 2}" y="${by - bh}" width="${bw}" height="${bh}" rx="10" fill="#f3efe6"/>`;
+  for (let x = cx - bw / 2 + 20; x < cx + bw / 2 - 10; x += 34) s += `<path d="M${x} ${by - bh + 12}l-4 14h8z" fill="#111"/>`;
+  s += `<rect x="${cx - bw / 2 + 6}" y="${at}" width="${bw - 12}" height="36" fill="url(#${p}gold)"/>`;
+  const gem = ['#c0263a', '#2a5bb8', '#1f8a5a'];
+  for (let i = 0; i < 7; i++) { const x = cx - bw / 2 + 30 + i * (bw - 60) / 6; s += i % 2 ? `<rect x="${f1(x - 7)}" y="${at + 11}" width="14" height="14" transform="rotate(45 ${f1(x)} ${at + 18})" fill="${gem[i % 3]}"/>` : `<ellipse cx="${f1(x)}" cy="${at + 18}" rx="9" ry="11" fill="${gem[i % 3]}"/>`; }
+  s += `<path d="M${cx - bw / 2 + 12} ${at}C${cx - bw / 2} ${at - 150} ${cx - 40} ${at - 170} ${cx} ${at - 120}C${cx + 40} ${at - 170} ${cx + bw / 2} ${at - 150} ${cx + bw / 2 - 12} ${at}M${cx - 80} ${at}C${cx - 90} ${at - 100} ${cx - 30} ${at - 130} ${cx} ${at - 120}C${cx + 30} ${at - 130} ${cx + 90} ${at - 100} ${cx + 80} ${at}M${cx} ${at}V${at - 120}" fill="none" stroke="url(#${p}gold)" stroke-width="14" stroke-linecap="round"/>`;
+  for (let i = 0; i < 9; i++) { const t = i / 8, x = cx - bw / 2 + 12 + (bw / 2 - 12) * t; s += `<circle cx="${f1(x)}" cy="${f1(at - 110 * Math.sin(t * Math.PI * .5) - 10 * t)}" r="4" fill="#fbf4e2"/><circle cx="${f1(2 * cx - x)}" cy="${f1(at - 110 * Math.sin(t * Math.PI * .5) - 10 * t)}" r="4" fill="#fbf4e2"/>`; }
+  s += `<circle cx="${cx}" cy="${at - 138}" r="17" fill="url(#${p}gold)"/><rect x="${cx - 4}" y="${at - 186}" width="8" height="34" fill="url(#${p}gold)"/><rect x="${cx - 14}" y="${at - 176}" width="28" height="8" fill="url(#${p}gold)"/>`;
+  return s;
+}
+/* A cathedral-style radio set: the age of royal broadcasts */
+function radio(p, W, H) {
+  const cx = W * .52, b = H * .78;
+  const outer = `M${cx - 170} ${b}V${b - 260}C${cx - 170} ${b - 430} ${cx + 170} ${b - 430} ${cx + 170} ${b - 260}V${b}Z`;
+  const inner = `M${cx - 130} ${b - 150}V${b - 260}C${cx - 130} ${b - 390} ${cx + 130} ${b - 390} ${cx + 130} ${b - 260}V${b - 150}Z`;
+  let s = `<defs>${LG(p + 'wall', [[0, '#2c1b14'], [1, '#100907']])}${LG(p + 'wood', [[0, '#5a2a12'], [.45, '#c47a3a'], [.6, '#a85f2a'], [1, '#4a220e']], 1, 0)}${RG(p + 'lamp', [[0, '#ffd590', .5], [1, '#ffd590', 0]])}${RG(p + 'dial', [[0, '#fff1c0'], [.7, '#f2b25a'], [1, '#a8641e']])}${LG(p + 'tbl', [[0, '#4a2612'], [1, '#120804']])}<clipPath id="${p}in"><path d="${inner}"/></clipPath></defs><rect width="${W}" height="${H}" fill="url(#${p}wall)"/>`;
+  for (let x = 0; x < W; x += 46) s += `<rect x="${x}" width="18" height="${b}" fill="#fff" opacity=".025"/>`;
+  s += `<circle cx="${W * .2}" cy="${H * .32}" r="${H * .55}" fill="url(#${p}lamp)"/>`;
+  s += `<rect y="${b}" width="${W}" height="${H - b}" fill="url(#${p}tbl)"/><rect y="${b}" width="${W}" height="3" fill="#e0a060" opacity=".35"/>`;
+  s += `<ellipse cx="${cx}" cy="${b + 6}" rx="200" ry="10" fill="#000" opacity=".5"/>`;
+  s += `<path d="${outer}" fill="url(#${p}wood)"/><path d="${inner}" fill="#2a160c"/>`;
+  let bars = ''; for (let x = cx - 120; x <= cx + 120; x += 30) bars += `M${x} ${b - 150}V${b - 400}`;
+  s += `<g clip-path="url(#${p}in)"><rect x="${cx - 130}" y="${b - 400}" width="260" height="260" fill="#d9b98a" opacity=".22"/><path d="${bars}" stroke="#b06a30" stroke-width="10"/></g>`;
+  s += `<path d="${inner}" fill="none" stroke="#e3a35e" stroke-width="3" opacity=".6"/>`;
+  s += `<circle cx="${cx}" cy="${b - 82}" r="70" fill="url(#${p}lamp)"/><circle cx="${cx}" cy="${b - 82}" r="32" fill="url(#${p}dial)"/><path d="M${cx} ${b - 82}L${cx + 18} ${b - 104}" stroke="#5a2a0a" stroke-width="2.5"/>`;
+  [cx - 100, cx + 100].forEach(x => s += `<circle cx="${x}" cy="${b - 70}" r="18" fill="#3a1a08"/><circle cx="${x - 4}" cy="${b - 74}" r="6" fill="#c47a3a" opacity=".6"/>`);
+  for (let i = 1; i <= 4; i++) s += `<path d="M${cx + 200 + i * 26} ${b - 330}a${80 + i * 26} ${80 + i * 26} 0 0 1 0 ${120 + i * 20}" fill="none" stroke="#f0c070" stroke-opacity="${f1(.4 - i * .08)}" stroke-width="2"/>`;
+  return s;
+}
+
+/* Gaslit Victorian street in fog with a walking figure */
+function facade(F, fill, seed) {
+  const r = rng(seed), lerp = (a, b, t) => a + (b - a) * t;
+  const P = (t, v) => [lerp(F.x0, F.xe, t), lerp(lerp(F.top0, F.tope, t), lerp(F.bot0, F.bote, t), v)];
+  let s = `<path d="M${F.x0} ${F.top0}L${f1(F.xe)} ${f1(F.tope)}L${f1(F.xe)} ${f1(F.bote)}L${F.x0} ${f1(F.bot0)}Z" fill="${fill}"/>`;
+  const ts = [.02, .2, .35, .47, .57, .66, .735, .8, .855, .9];
+  for (let i = 0; i < ts.length - 1; i++) {
+    const t1 = ts[i] + .015, t2 = ts[i + 1] - .035;
+    for (const [v1, v2] of [[.1, .24], [.34, .5], [.6, .74]]) {
+      if (r() < .8) { const lit = r() < .3, A = P(t1, v1), B = P(t2, v1), C = P(t2, v2), D = P(t1, v2); s += `<path d="M${f1(A[0])} ${f1(A[1])}L${f1(B[0])} ${f1(B[1])}L${f1(C[0])} ${f1(C[1])}L${f1(D[0])} ${f1(D[1])}Z" fill="${lit ? '#f2c46e' : '#2b2a20'}" opacity="${lit ? .85 : .75}"/>`; }
+    }
+  }
+  [.3, .56, .82].forEach(v => { const A = P(0, v), B = P(1, v); s += `<path d="M${f1(A[0])} ${f1(A[1])}L${f1(B[0])} ${f1(B[1])}" stroke="#000" stroke-opacity=".45" stroke-width="3"/>`; });
+  return s;
+}
+function gaslit(p, W, H, o) {
+  const vx = W * o.vx, vy = H * o.vy;
+  let s = `<defs>${RG(p + 'fog', [[0, '#e8dcb4'], [.35, '#9a9070'], [1, '#1c1b14']], o.vx, o.vy, .8)}${RG(p + 'fo', [[0, '#e8dcb4', .9], [.3, '#c9bc94', .35], [.7, '#c9bc94', 0]], o.vx, o.vy, .7)}${RG(p + 'gl', [[0, '#ffe2a0', .85], [.3, '#ffcf7a', .3], [1, '#ffcf7a', 0]])}${LG(p + 'mist', [[0, '#d9cfae', 0], [.6, '#d9cfae', .25], [1, '#d9cfae', .05]])}</defs><rect width="${W}" height="${H}" fill="url(#${p}fog)"/>`;
+  const L = { x0: 0, top0: 0, bot0: H * .86, xe: vx - W * .06, tope: vy - H * .12, bote: vy + H * .04 };
+  const R = { x0: W, top0: H * .04, bot0: H * .86, xe: vx + W * .06, tope: vy - H * .1, bote: vy + H * .04 };
+  s += facade(L, '#15140f', o.seed) + facade(R, '#100f0b', o.seed + 5);
+  s += `<path d="M0 ${H * .86}L${f1(L.xe)} ${f1(L.bote)}H${f1(R.xe)}L${W} ${H * .86}V${H}H0Z" fill="#1f1d15"/>`;
+  let cb = ''; for (let i = 0; i <= 14; i++) cb += `M${f1(vx)} ${f1(vy + H * .04)}L${f1(-W * .4 + i * W * 1.8 / 14)} ${H}`;
+  for (let k = 1; k < 12; k++) { const y = vy + H * .04 + (H - vy - H * .04) * (k / 12) ** 2; cb += `M0 ${f1(y)}H${W}`; }
+  s += `<path d="${cb}" stroke="#d9c690" stroke-opacity=".07" stroke-width="1.5"/>`;
+  s += `<rect width="${W}" height="${H}" fill="url(#${p}fo)"/>`;
+  const lx = W * o.lamp, lt = H * .3, lb = H * .92;
+  s += `<ellipse cx="${lx}" cy="${lb}" rx="${W * .22}" ry="${H * .03}" fill="#ffcf7a" opacity=".18"/>`;
+  s += `<circle cx="${lx}" cy="${lt}" r="${W * .3}" fill="url(#${p}gl)"/>`;
+  s += `<rect x="${lx - 5}" y="${lt + 30}" width="10" height="${lb - lt - 30}" fill="#0b0a07"/><rect x="${lx - 12}" y="${lb - 20}" width="24" height="20" fill="#0b0a07"/><path d="M${lx - 20} ${lt + 32}H${lx + 20}L${lx + 14} ${lt}H${lx - 14}Z" fill="#0b0a07"/><path d="M${lx - 13} ${lt + 28}H${lx + 13}L${lx + 9} ${lt + 4}H${lx - 9}Z" fill="#ffe3a6"/><path d="M${lx - 18} ${lt}L${lx} ${lt - 18}L${lx + 18} ${lt}Z" fill="#0b0a07"/>`;
+  if (o.fig) s += `<g opacity=".92">${gent(W * o.fig.x, H * o.fig.b, H * o.fig.h, '#0b0a07')}</g>`;
+  s += `<rect y="${H * .55}" width="${W}" height="${H * .45}" fill="url(#${p}mist)"/>`;
+  return s;
+}
+/* Detective's desk: notes, magnifying glass, pocket watch, candle */
+function deskStill(p, W, H) {
+  let s = `<defs>${LG(p + 'desk', [[0, '#3a2412'], [1, '#120a05']])}${RG(p + 'cand', [[0, '#ffd88a', .55], [.4, '#ffb050', .14], [1, '#ffb050', 0]])}${RG(p + 'lens', [[0, '#fff', .28], [.7, '#c9dbe0', .08], [1, '#9fb6bd', .3]], .35, .35, .7)}${LG(p + 'brass', [[0, '#f2d58a'], [.5, '#9a7330'], [1, '#e2bf6a']], 1, 1)}</defs><rect width="${W}" height="${H}" fill="url(#${p}desk)"/>`;
+  const r = rng(9); let gr = ''; for (let i = 0; i < 40; i++) { const y = r() * H; gr += `M0 ${f1(y)}C${W * .3} ${f1(y + (r() - .5) * 30)} ${W * .6} ${f1(y + (r() - .5) * 30)} ${W} ${f1(y)}`; }
+  s += `<path d="${gr}" stroke="#000" stroke-opacity=".12" fill="none"/>`;
+  s += `<circle cx="${W * .84}" cy="${H * .18}" r="${H * .75}" fill="url(#${p}cand)"/>`;
+  const paper = (x, y, w, h, rot, seed) => { const q = rng(seed); let l = ''; for (let yy = y + 50; yy < y + h - 30; yy += 22) l += `<rect x="${x + 36}" y="${yy}" width="${f1((w - 72) * (.5 + q() * .5))}" height="3" fill="#4a3a24" opacity=".45"/>`; return `<g transform="rotate(${rot} ${x + w / 2} ${y + h / 2})"><rect x="${x + 8}" y="${y + 10}" width="${w}" height="${h}" fill="#000" opacity=".35"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#e7dcc2"/>${l}</g>`; };
+  s += paper(170, 120, 400, 500, -8, 3) + paper(520, 170, 360, 460, 6, 7);
+  s += `<g transform="rotate(6 700 400)" fill="none" stroke="#3b2a18" stroke-width="2" opacity=".75"><circle cx="640" cy="330" r="34"/><circle cx="760" cy="420" r="24"/><path d="M670 345L740 410M640 364V460H720"/><path d="M600 500h120" stroke-dasharray="6 6"/></g>`;
+  s += `<g transform="rotate(-32 640 430)"><rect x="760" y="416" width="230" height="30" rx="12" fill="#2a1a0e"/><rect x="742" y="420" width="26" height="22" fill="url(#${p}brass)"/><circle cx="640" cy="430" r="118" fill="url(#${p}lens)"/><circle cx="640" cy="430" r="118" fill="none" stroke="url(#${p}brass)" stroke-width="18"/><path d="M570 360a100 100 0 0 1 60 -36" stroke="#fff" stroke-opacity=".5" stroke-width="5" fill="none" stroke-linecap="round"/></g>`;
+  const wx = 290, wy = 590;
+  let ch = ''; for (let i = 0; i < 16; i++) ch += `<circle cx="${f1(wx + 70 + i * 14)}" cy="${f1(wy - 40 - Math.sin(i / 15 * Math.PI) * 30 - i * 3)}" r="4" fill="none" stroke="#d9b45e" stroke-width="2"/>`;
+  s += ch + `<circle cx="${wx}" cy="${wy}" r="74" fill="url(#${p}brass)"/><circle cx="${wx}" cy="${wy}" r="60" fill="#f4ecd8"/>`;
+  for (let i = 0; i < 12; i++) { const an = i * Math.PI / 6; s += `<path d="M${f1(wx + Math.cos(an) * 50)} ${f1(wy + Math.sin(an) * 50)}L${f1(wx + Math.cos(an) * 56)} ${f1(wy + Math.sin(an) * 56)}" stroke="#2a2016" stroke-width="2.5"/>`; }
+  s += `<path d="M${wx} ${wy}V${wy - 40}M${wx} ${wy}L${wx + 26} ${wy + 12}" stroke="#2a2016" stroke-width="3" stroke-linecap="round"/><circle cx="${wx}" cy="${wy - 82}" r="9" fill="url(#${p}brass)"/>`;
+  s += `<rect x="${W * .84 - 16}" y="${H * .2}" width="32" height="160" fill="#efe4c8"/><ellipse cx="${W * .84}" cy="${H * .2 - 18}" rx="9" ry="22" fill="#ffdc8a"/><ellipse cx="${W * .84}" cy="${H * .2 - 12}" rx="4" ry="10" fill="#fff6de"/><rect x="${W * .84 - 40}" y="${H * .2 + 160}" width="80" height="12" fill="url(#${p}brass)"/>`;
+  return s;
+}
+/* Victorian laboratory glassware */
+function lab(p, W, H) {
+  const sh = H * .74;
+  let s = `<defs>${LG(p + 'bg', [[0, '#1b2219'], [1, '#0a0d09']])}${RG(p + 'gg', [[0, '#9be27a', .55], [1, '#9be27a', 0]])}${RG(p + 'ag', [[0, '#ffc25e', .55], [1, '#ffc25e', 0]])}${RG(p + 'rg', [[0, '#e0607a', .45], [1, '#e0607a', 0]])}${LG(p + 'sh', [[0, '#4a3420'], [1, '#1a1008']])}</defs><rect width="${W}" height="${H}" fill="url(#${p}bg)"/>`;
+  for (let y = 60; y < sh; y += 70) s += `<rect y="${y}" width="${W}" height="2" fill="#000" opacity=".25"/>`;
+  s += `<circle cx="330" cy="${sh - 80}" r="260" fill="url(#${p}gg)"/><circle cx="700" cy="${sh - 100}" r="240" fill="url(#${p}ag)"/><circle cx="980" cy="${sh - 60}" r="200" fill="url(#${p}rg)"/>`;
+  s += `<rect y="${sh}" width="${W}" height="${H - sh}" fill="url(#${p}sh)"/><rect y="${sh}" width="${W}" height="4" fill="#c9915a" opacity=".35"/>`;
+  const glass = 'fill="#fff" fill-opacity=".07" stroke="#e8f2e0" stroke-opacity=".55" stroke-width="3"';
+  let x = 330, y = sh;
+  s += `<path d="M${x - 46} ${y - 60}H${x + 46}L${x + 80} ${y}H${x - 80}Z" fill="#7bd35a" opacity=".85"/><path d="M${x - 14} ${y - 200}V${y - 120}L${x - 80} ${y}H${x + 80}L${x + 14} ${y - 120}V${y - 200}" ${glass}/><rect x="${x - 18}" y="${y - 206}" width="36" height="8" fill="#e8f2e0" opacity=".5"/>`;
+  x = 700;
+  s += `<path d="M${f1(x - 67.1)} ${y - 50}A70 70 0 0 0 ${f1(x + 67.1)} ${y - 50}Z" fill="#f0a640" opacity=".9" transform="translate(0 -20)"/><path d="M${x - 13} ${y - 260}V${y - 150}A70 70 0 1 0 ${x + 13} ${y - 150}V${y - 260}" ${glass}/>`;
+  s += `<path d="M${x - 40} ${y}h80l-8 -14h-64z" fill="#2a1a0e"/>`;
+  x = 960;
+  s += `<rect x="${x - 110}" y="${y - 90}" width="220" height="14" fill="#5a3a20"/><rect x="${x - 110}" y="${y - 20}" width="220" height="10" fill="#5a3a20"/>`;
+  ['#e0607a', '#7bd35a', '#f0a640', '#8fb4e8'].forEach((c, i) => { const tx = x - 78 + i * 52; s += `<rect x="${tx - 12}" y="${y - 70}" width="24" height="${f1(40 + i * 6)}" rx="12" fill="${c}" opacity=".85" transform="translate(0 ${f1(-i * 6 + 20)})"/><rect x="${tx - 14}" y="${y - 160}" width="28" height="150" rx="14" ${glass}/>`; });
+  const r = rng(4); for (let i = 0; i < 26; i++) s += `<circle cx="${f1(330 + (r() - .5) * 80)}" cy="${f1(sh - 70 - r() * 160)}" r="${f1(r() * 4 + 1)}" fill="none" stroke="#c9f2b0" stroke-opacity=".6"/>`;
+  s += `<path d="M${700 - 30} ${sh - 290}c-20 -30 30 -50 0 -90s20 -40 0 -70" fill="none" stroke="#e8e2d0" stroke-opacity=".12" stroke-width="14" stroke-linecap="round"/>`;
+  return s;
+}
+
+/* =======================================================================
+   C. THE 24 ILLUSTRATIONS (key art + three scenes per film)
+   ======================================================================= */
+const PROPOSAL_SKY = [[0, '#1f1226'], [.45, '#6e2f44'], [.8, '#de7d58'], [1, '#f8c47c']];
+const MSK_SKY = [[0, '#7f97b8'], [.5, '#c9b5c4'], [.85, '#f3cdb8'], [1, '#fbe3cf']];
+const ART = {
+  'proposal:key': p => SVG(600, 900, coast(p, 600, 900, { hz: 600, seed: 11, clouds: 7, cloud: '#ffcf9e', sky: PROPOSAL_SKY, sea: [[0, '#d08458'], [.3, '#6c3140'], [1, '#120a10']], sun: { x: 230, y: 592, r: 60, core: '#ffd27e', glow: '#ffc277' }, shore: { h: 34, fill: '#4a2333', town: [10, 300], tf: '#2c1521', win: '#ffd07a' }, lighthouse: { x: 490, h: 190, c: '#200e17', lamp: '#ffe3a3' }, boats: [[110, 720, 1.1, '#1c0e16'], [250, 650, .5, '#2b1621']], birds: [[300, 300, 1], [340, 284, .7], [140, 350, .8]], birdC: '#2a1420' }), 'Illustration: a lighthouse at golden hour', p),
+  'proposal:s1': p => SVG(1200, 750, coast(p, 1200, 750, { hz: 480, seed: 23, clouds: 9, cloud: '#ffcf9e', sky: PROPOSAL_SKY, sea: [[0, '#cf8a5c'], [.35, '#6c3140'], [1, '#160c12']], sun: { x: 800, y: 474, r: 44, core: '#ffd27e', glow: '#ffc277' }, shore: { h: 44, fill: '#4a2333', town: [40, 640], tf: '#2c1521', win: '#ffd07a' }, lighthouse: { x: 1060, h: 170, c: '#200e17', lamp: '#ffe3a3' }, boats: [[280, 610, 1, '#1c0e16'], [560, 545, .5, '#2b1621'], [690, 522, .32, '#3a1d2a']], birds: [[420, 200, 1.1], [470, 180, .8], [380, 240, .7]], birdC: '#2a1420' }), 'Illustration: the New England coast at sunset', p),
+  'proposal:s2': p => SVG(1200, 750, mainStreet(p, 1200, 750), 'Illustration: a small-town street with string lights at dusk', p),
+  'proposal:s3': p => SVG(1200, 750, skyline(p, 1200, 750, { seed: 5, style: 'modern', base: 560, sky: [[0, '#1a1430'], [.55, '#7a3a52'], [1, '#f0a868']], orb: [880, 520, 40, '#ffd08a'], far: { fill: '#4a2840', min: 120, max: 330 }, near: { fill: '#1a0f1a', min: 90, max: 300, win: '#ffd28a', rate: .2 }, water: [[0, '#3a1e2c'], [1, '#0f0a10']], stars: 30 }), 'Illustration: a city skyline at dusk', p),
+
+  'msk:key': p => SVG(600, 900, coast(p, 600, 900, { hz: 560, seed: 4, clouds: 6, cloud: '#fff', sky: MSK_SKY, sea: [[0, '#d8dce6'], [.35, '#9fb1c8'], [1, '#64799a']], sun: { x: 400, y: 548, r: 42, core: '#fff1dd', glow: '#ffe0c2' }, shore: { h: 16, fill: '#a3adc4' }, sand: { y: 740, c1: '#ecd3bd', c2: '#b89b88' }, figs: { x1: 240, x2: 318, b: 812, h: 156, f: '#3b4257' }, birds: [[120, 260, 1], [160, 240, .7]], birdC: '#5a6378' }), 'Illustration: two sisters at the water’s edge', p, .45),
+  'msk:s1': p => SVG(1200, 750, coast(p, 1200, 750, { hz: 420, seed: 8, clouds: 9, cloud: '#fff', sky: MSK_SKY, sea: [[0, '#d8dce6'], [.35, '#9fb1c8'], [1, '#64799a']], sun: { x: 260, y: 408, r: 36, core: '#fff1dd', glow: '#ffe0c2' }, shore: { h: 20, fill: '#a3adc4' }, sand: { y: 600, c1: '#ecd3bd', c2: '#b89b88' }, kite: [880, 170], birds: [[520, 200, 1], [560, 184, .7]], birdC: '#5a6378' }), 'Illustration: a kite above a quiet beach', p, .45),
+  'msk:s2': p => SVG(1200, 750, windowRoom(p, 1200, 750), 'Illustration: morning light through a window', p, .5),
+  'msk:s3': p => SVG(1200, 750, meadow(p, 1200, 750), 'Illustration: a backlit meadow at sunset', p, .5),
+
+  'lmi:key': p => SVG(600, 900, snowyBlocks(p, 600, 900, { ground: 770, seed: 5, moon: [455, 140, 32], slabs: [[30, 260, 520, '#121c2c'], [330, 230, 400, '#0d1522']], pines: [[30, 150], [300, 110], [570, 175], [230, 90]] }), 'Illustration: apartment blocks on a snowy night', p, .7),
+  'lmi:s1': p => SVG(1200, 750, snowyBlocks(p, 1200, 750, { ground: 640, seed: 9, moon: [760, 150, 26], slabs: [[90, 360, 430, '#121c2c'], [500, 300, 330, '#0f1826'], [840, 300, 470, '#121c2c']], pines: [[40, 160], [470, 130], [800, 110], [1170, 170], [640, 90]] }), 'Illustration: a snowy apartment courtyard at night', p, .7),
+  'lmi:s2': p => SVG(1200, 750, climbingFrame(p, 1200, 750), 'Illustration: a climbing frame under a streetlamp in the snow', p, .7),
+  'lmi:s3': p => SVG(1200, 750, woods(p, 1200, 750), 'Illustration: moonlight over winter woods', p, .7),
+
+  'hours:key': p => SVG(600, 900, slotCanyon(p, 600, 900, { cx: .5, gTop: .22, gBot: .07, seed: 3, boulder: .58 }), 'Illustration: a boulder wedged in a slot canyon', p),
+  'hours:s1': p => SVG(1200, 750, mesas(p, 1200, 750), 'Illustration: desert mesas at sunset', p),
+  'hours:s2': p => SVG(1200, 750, slotCanyon(p, 1200, 750, { cx: .52, gTop: .17, gBot: .06, seed: 8 }), 'Illustration: light falling into a slot canyon', p),
+  'hours:s3': p => SVG(1200, 750, desertNight(p, 1200, 750), 'Illustration: the Milky Way above a canyon', p),
+
+  'king:key': p => SVG(600, 900, microphone(p, 600, 900), 'Illustration: a vintage microphone before a velvet curtain', p),
+  'king:s1': p => SVG(1200, 750, crown(p, 1200, 750), 'Illustration: a crown on a velvet cushion', p),
+  'king:s2': p => SVG(1200, 750, skyline(p, 1200, 750, { seed: 14, style: 'old', base: 520, sky: [[0, '#120b20'], [.6, '#4a2a4a'], [1, '#c9806a']], far: { fill: '#3a2840', min: 60, max: 170 }, near: { fill: '#140c18', min: 40, max: 130, win: '#f0c27a', rate: .14 }, tower: { x: 780, h: 400, face: '#f6d48a' }, water: [[0, '#2a1a2c'], [1, '#07050a']], fogs: true, fog: '#c9a0a0', stars: 40 }), 'Illustration: London at dusk with a clock tower', p),
+  'king:s3': p => SVG(1200, 750, radio(p, 1200, 750), 'Illustration: a vintage radio set', p),
+
+  'sherlock:key': p => SVG(600, 900, gaslit(p, 600, 900, { vx: .5, vy: .5, lamp: .8, seed: 4, fig: { x: .46, b: .8, h: .2 } }), 'Illustration: a gaslit Victorian street in fog', p, .7),
+  'sherlock:s1': p => SVG(1200, 750, skyline(p, 1200, 750, { seed: 31, style: 'old', base: 560, sky: [[0, '#0d0f0b'], [.6, '#3a3a2c'], [1, '#8a8360']], orb: [920, 150, 38, '#efe6c8'], far: { fill: '#2e2e24', min: 70, max: 200 }, near: { fill: '#11110d', min: 50, max: 160, win: '#f0c46e', rate: .1 }, water: [[0, '#2a2a20'], [1, '#080806']], fogs: true, fog: '#cfc6a0', smoke: true, stars: 20 }), 'Illustration: Victorian rooftops in fog and smoke', p, .7),
+  'sherlock:s2': p => SVG(1200, 750, deskStill(p, 1200, 750), 'Illustration: a magnifying glass, pocket watch and case notes', p, .7),
+  'sherlock:s3': p => SVG(1200, 750, lab(p, 1200, 750), 'Illustration: laboratory glassware', p, .65)
+};
+
+/* =======================================================================
+   D. RENDERING ARTWORK (lazily, as it approaches the screen)
+   ======================================================================= */
+let uid = 0;
+function renderArt(el, meet) {
+  const key = el.dataset.art, fn = ART[key];
+  if (!fn) return;
+  el.dataset.done = '1';
+  let html = fn('a' + (uid++) + '_');
+  if (meet) html = html.replace('xMidYMid slice', 'xMidYMid meet');
+  el.innerHTML = html;
+  const src = MEDIA[key];
+  if (src) { /* optional real photo: only replaces the illustration if it loads */
+    const img = new Image();
+    img.alt = (el.querySelector('svg') || {}).getAttribute ? el.querySelector('svg').getAttribute('aria-label') : '';
+    img.decoding = 'async';
+    img.onload = () => { el.innerHTML = ''; el.appendChild(img); };
+    img.src = src;
+  }
+}
+const artEls = [...document.querySelectorAll('[data-art]')];
+function renderAll() { artEls.forEach(el => { if (!el.dataset.done) renderArt(el); }); }
+if ('IntersectionObserver' in window) {
+  const artIO = new IntersectionObserver((entries, obs) => entries.forEach(e => { if (e.isIntersecting) { renderArt(e.target); obs.unobserve(e.target); } }), { rootMargin: '900px 0px' });
+  artEls.forEach(el => artIO.observe(el));
+} else renderAll();
+window.addEventListener('beforeprint', renderAll);
+
+/* =======================================================================
+   E. INTERFACE: progress bar, sticky nav, back-to-top, mobile menu
+   ======================================================================= */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const progress = document.getElementById('progress'), nav = document.getElementById('nav'), toTop = document.getElementById('toTop');
+let ticking = false;
+function onScroll() {
+  const h = document.documentElement, max = h.scrollHeight - h.clientHeight, y = h.scrollTop || document.body.scrollTop;
+  progress.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
+  nav.classList.toggle('scrolled', y > 40);
+  toTop.classList.toggle('show', y > 700);
+  if (max - y < 80) document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#about'));
+  ticking = false;
+}
+window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(onScroll); } }, { passive: true });
+window.addEventListener('resize', onScroll);
+onScroll();
+toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }));
+
+/* Highlight the current section in the navigation */
+const navLinks = [...document.querySelectorAll('.nav-links a')];
+const tracked = navLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+tracked.push(document.getElementById('preferences'));
+if ('IntersectionObserver' in window) {
+  const secIO = new IntersectionObserver(entries => entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const id = e.target.id === 'preferences' ? 'vocabulary' : e.target.id;
+    navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+  }), { rootMargin: '-45% 0px -50% 0px' });
+  tracked.forEach(s => secIO.observe(s));
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) navLinks.forEach(a => a.classList.remove('active')); }, { rootMargin: '-45% 0px -50% 0px' }).observe(document.getElementById('cover'));
+}
+
+/* Mobile menu */
+const menuBtn = document.getElementById('menuBtn'), mobileMenu = document.getElementById('mobileMenu');
+function setMenu(open) {
+  menuBtn.setAttribute('aria-expanded', open);
+  mobileMenu.classList.toggle('open', open);
+  mobileMenu.setAttribute('aria-hidden', !open);
+  document.body.classList.toggle('no-scroll', open);
+  menuBtn.querySelector('span').textContent = open ? 'Close' : 'Menu';
+  mobileMenu.querySelectorAll('li').forEach((li, i) => li.style.transitionDelay = open ? (i * 0.04) + 's' : '0s');
+}
+menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
+mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+window.addEventListener('resize', () => { if (window.innerWidth > 1180 && mobileMenu.classList.contains('open')) setMenu(false); });
+
+/* =======================================================================
+   F. ENTRANCE ANIMATIONS & ANIMATED NUMBERS
+   ======================================================================= */
+function countUp(el) {
+  if (reduceMotion || el.dataset.counted) return;
+  el.dataset.counted = '1';
+  const end = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0), pre = el.dataset.prefix || '', suf = el.dataset.suffix || '', t0 = performance.now(), dur = 1700;
+  (function step(t) { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = pre + (end * e).toFixed(dec) + suf; if (k < 1) requestAnimationFrame(step); })(t0);
+}
+if ('IntersectionObserver' in window && !reduceMotion) {
+  const revIO = new IntersectionObserver((entries, obs) => entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    e.target.querySelectorAll('[data-count]').forEach(countUp);
+    obs.unobserve(e.target);
+  }), { threshold: .12, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => revIO.observe(el));
+  const numIO = new IntersectionObserver((entries, obs) => entries.forEach(e => { if (e.isIntersecting) { countUp(e.target); obs.unobserve(e.target); } }), { threshold: .6 });
+  document.querySelectorAll('[data-count]').forEach(el => numIO.observe(el));
+} else document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+window.addEventListener('beforeprint', () => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
+
+/* =======================================================================
+   G. IMAGE LIGHTBOX
+   ======================================================================= */
+const lb = document.getElementById('lightbox'), lbMedia = lb.querySelector('.lb-media'), lbCap = lb.querySelector('.lb-cap'), lbCount = lb.querySelector('.lb-count');
+let group = [], idx = 0, lastFocus = null;
+const capOf = z => z.dataset.caption || ((z.querySelector('figcaption') || {}).textContent || '').trim();
+function openLB(z) {
+  group = [...document.querySelectorAll(`[data-group="${z.dataset.group}"]`)];
+  idx = Math.max(0, group.indexOf(z));
+  lastFocus = document.activeElement;
+  showLB();
+  lb.hidden = false;
+  fitLB();
+  requestAnimationFrame(() => lb.classList.add('open'));
+  document.body.classList.add('no-scroll');
+  lb.querySelector('.lb-close').focus();
+}
+function showLB() {
+  const z = group[idx], art = z.querySelector('[data-art]');
+  lbMedia.innerHTML = '';
+  const box = document.createElement('div');
+  box.className = 'lb-art'; box.dataset.art = art.dataset.art;
+  lbMedia.appendChild(box); renderArt(box);
+  fitLB();
+  lbCap.textContent = capOf(z).replace(/^(Key art|Location|Mood|Setting|Theme|Atmosphere|Landscape|Night|Royalty|The broadcast|Observation|Science)/, '$1 — ');
+  lbCount.textContent = (idx + 1) + ' / ' + group.length;
+  lb.classList.toggle('single', group.length < 2);
+}
+/* size the viewer to the picture's exact proportions */
+function fitLB() {
+  const box = lbMedia.querySelector('.lb-art'), svg = box && box.querySelector('svg');
+  if (!svg) return;
+  const [, , w, h] = svg.getAttribute('viewBox').split(' ').map(Number), cw = lbMedia.clientWidth, ch = lbMedia.clientHeight, k = Math.min(cw / w, ch / h);
+  box.style.width = Math.floor(w * k) + 'px'; box.style.height = Math.floor(h * k) + 'px';
+}
+window.addEventListener('resize', () => { if (!lb.hidden) fitLB(); });
+function closeLB() {
+  lb.classList.remove('open');
+  document.body.classList.remove('no-scroll');
+  setTimeout(() => { lb.hidden = true; lbMedia.innerHTML = ''; }, 300);
+  if (lastFocus) lastFocus.focus({ preventScroll: true });
+}
+const stepLB = d => { idx = (idx + d + group.length) % group.length; showLB(); };
+document.querySelectorAll('.zoom').forEach(z => {
+  z.tabIndex = 0; z.setAttribute('role', 'button');
+  z.setAttribute('aria-label', 'Enlarge image: ' + capOf(z));
+  z.addEventListener('click', () => openLB(z));
+  z.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLB(z); } });
+});
+document.querySelectorAll('[data-expand]').forEach(b => b.addEventListener('click', () => openLB(b.closest('[data-group]'))));
+lb.querySelector('.lb-close').addEventListener('click', closeLB);
+lb.querySelector('.lb-prev').addEventListener('click', () => stepLB(-1));
+lb.querySelector('.lb-next').addEventListener('click', () => stepLB(1));
+lb.addEventListener('click', e => { if (e.target === lb || e.target.classList.contains('lb-figure')) closeLB(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && mobileMenu.classList.contains('open')) setMenu(false);
+  if (lb.hidden) return;
+  if (e.key === 'Escape') closeLB();
+  else if (e.key === 'ArrowLeft') stepLB(-1);
+  else if (e.key === 'ArrowRight') stepLB(1);
+  else if (e.key === 'Tab') { /* keep keyboard focus inside the viewer */
+    const f = [...lb.querySelectorAll('button')].filter(b => getComputedStyle(b).visibility !== 'hidden');
+    const i = f.indexOf(document.activeElement);
+    if (e.shiftKey && i <= 0) { e.preventDefault(); f[f.length - 1].focus(); }
+    else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); }
+  }
+});
+let tx = null; /* swipe on phones */
+lb.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+lb.addEventListener('touchend', e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50 && group.length > 1) stepLB(dx < 0 ? 1 : -1); tx = null; });
+
+/* =======================================================================
+   H. FALLING SNOW (Let Me In) — runs only while visible
+   ======================================================================= */
+const snowC = document.querySelector('.snow');
+if (snowC && snowC.getContext && !reduceMotion) {
+  const ctx = snowC.getContext('2d'); let flakes = [], run = false, W = 0, H = 0;
+  const size = () => {
+    const dpr = Math.min(2, window.devicePixelRatio || 1); W = snowC.clientWidth; H = snowC.clientHeight;
+    snowC.width = W * dpr; snowC.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    flakes = Array.from({ length: Math.min(220, Math.round(W * H / 7000)) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 2 + .5, s: Math.random() * .6 + .25, d: Math.random() * 6.28 }));
+  };
+  const tick = () => {
+    if (!run) return;
+    ctx.clearRect(0, 0, W, H); ctx.fillStyle = 'rgba(228,238,250,.75)'; ctx.beginPath();
+    for (const f of flakes) { f.y += f.s; f.d += .012; f.x += Math.sin(f.d) * .35; if (f.y > H + 4) { f.y = -4; f.x = Math.random() * W; } ctx.moveTo(f.x + f.r, f.y); ctx.arc(f.x, f.y, f.r, 0, 6.283); }
+    ctx.fill(); requestAnimationFrame(tick);
+  };
+  new IntersectionObserver(([e]) => { if (e.isIntersecting) { if (!run) { run = true; size(); requestAnimationFrame(tick); } } else run = false; }).observe(snowC.parentElement);
+  window.addEventListener('resize', () => { if (run) size(); });
+}
+
+/* =======================================================================
+   I. VOCABULARY LANGUAGE SWITCH & PRINT BUTTON
+   ======================================================================= */
+const vgrid = document.querySelector('.vocab-grid');
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => {
+  vgrid.dataset.lang = b.dataset.lang;
+  document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b));
+}));
+document.querySelectorAll('[data-print]').forEach(b => b.addEventListener('click', () => {
+  renderAll(); document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  setTimeout(() => window.print(), 200);
+}));
+</script>
+</body>
+</html>
